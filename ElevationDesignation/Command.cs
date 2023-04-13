@@ -48,7 +48,7 @@ namespace ElevationDesignation
 
             List<ViewSheet> sheetsList = GetAllSheets(doc);
 
-            List<ViewSheet> sheetGroup = GetAllSheetsByGroup(doc);
+            //List<ViewSheet> sheetGroup = GetAllSheetsByGroup(doc);
 
             using (Transaction t = new Transaction(doc))
             {
@@ -62,8 +62,16 @@ namespace ElevationDesignation
 
                 foreach (ViewSheet curSheet in sheetsList)
                 {
+                    string grpName = GetParameterValueByName(curSheet, "Group");
+                    string curFilter = GetParameterValueByName(curSheet, "Code Filter");
+
                     if (curSheet.SheetNumber.Contains(curElev.ToLower()))
                         curSheet.SheetNumber = curSheet.SheetNumber.Replace(curElev.ToLower(), newElev.ToLower());
+
+                    //if (grpName.Contains(curElev))
+                    //    grpName = SetParameterByName(curSheet, grpName, newElev);
+
+                    //if (grpFilter.Contains(curElev))
                 }
 
                 t.Commit();
@@ -72,24 +80,24 @@ namespace ElevationDesignation
             }           
         }
 
-        public static List<ViewSheet> GetAllSheetsByGroup(Document doc)
-        {
-            List<ViewSheet> sheets = GetAllSheets(doc);
+        //public static List<ViewSheet> GetAllSheetsByGroup(Document doc)
+        //{
+        //    List<ViewSheet> sheets = GetAllSheets(doc);
 
-            List<ViewSheet> sheetGroup = new List<ViewSheet>();
+        //    List<ViewSheet> sheetGroup = new List<ViewSheet>();
 
-            foreach (ViewSheet sheet in sheets)
-            {
-                if(sheet.GroupId = true)
-                {
-                    sheetGroup.Add(sheet);
-                }
+        //    foreach (ViewSheet sheet in sheets)
+        //    {
+        //        if(sheet.GroupId = true)
+        //        {
+        //            sheetGroup.Add(sheet);
+        //        }
 
-                return sheetGroup;
-            }
+        //        return sheetGroup;
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         public static List<ViewSheet> GetAllSheets(Document curDoc)
         {
@@ -118,6 +126,37 @@ namespace ElevationDesignation
             }
 
             return returnViews;
+        }
+
+        internal static string GetParameterValueByName(Element element, string paramName)
+        {
+            IList<Parameter> paramList = element.GetParameters(paramName);
+
+            if (paramList != null)
+                try
+                {
+                    Parameter param = paramList[0];
+                    string paramValue = param.AsValueString();
+                    return paramValue;
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    return null;
+                }
+
+            return "";
+        }
+
+        internal static void SetParameterByName(Element element, string paramName, string value)
+        {
+            IList<Parameter> paramList = element.GetParameters(paramName);
+
+            if (paramList != null)
+            {
+                Parameter param = paramList[0];
+
+                param.Set(value);
+            }
         }
 
         public static String GetMethod()

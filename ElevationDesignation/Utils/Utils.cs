@@ -30,5 +30,36 @@ namespace ElevationDesignation
 
             return null;
         }
+
+        internal static string GetParameterValueByName(Element element, string paramName)
+        {
+            IList<Parameter> paramList = element.GetParameters(paramName);
+
+            if (paramList != null)
+                try
+                {
+                    Parameter param = paramList[0];
+                    string paramValue = param.AsValueString();
+                    return paramValue;
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    return null;
+                }
+
+            return "";
+        }
+
+        internal static void SetParameterByName(Element element, string paramName, string value)
+        {
+            IList<Parameter> paramList = element.GetParameters(paramName);
+
+            if (paramList != null)
+            {
+                Parameter param = paramList[0];
+
+                param.Set(value);
+            }
+        }
     }
 }
