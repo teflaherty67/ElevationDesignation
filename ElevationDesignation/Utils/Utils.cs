@@ -50,6 +50,17 @@ namespace ElevationDesignation
             return "";
         }
 
+        public static Parameter GetParameterByName(Element curElem, string paramName)
+        {
+            foreach (Parameter curParam in curElem.Parameters)
+            {
+                if (curParam.Definition.Name.ToString() == paramName)
+                    return curParam;
+            }
+
+            return null;
+        }
+
         internal static void SetParameterByName(Element element, string paramName, string value)
         {
             IList<Parameter> paramList = element.GetParameters(paramName);
@@ -60,6 +71,34 @@ namespace ElevationDesignation
 
                 param.Set(value);
             }
+        }
+
+        public static bool SetParameterValue(Element curElem, string paramName, string value)
+        {
+            Parameter curParam = GetParameterByName(curElem, paramName);
+
+            if (curParam != null)
+            {
+                curParam.Set(value);
+                return true;
+            }
+
+            return false;
+
+        }
+
+        public static bool SetParameterValue(Element curElem, string paramName, double value)
+        {
+            Parameter curParam = GetParameterByName(curElem, paramName);
+
+            if (curParam != null)
+            {
+                curParam.Set(value);
+                return true;
+            }
+
+            return false;
+
         }
     }
 }

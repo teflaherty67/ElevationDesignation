@@ -44,11 +44,42 @@ namespace ElevationDesignation
             string curElev = curForm.GetComboBoxCurElevSelectedItem();
             string newElev = curForm.GetComboBoxNewElevSelectedItem();
 
+            string curFilter;
+
+            if (curElev == "A")
+                curFilter = "1";
+            else if (curElev == "B")
+                curFilter = "2";
+            else if (curElev == "C")
+                curFilter = "3";
+            else if (curElev == "D")
+                curFilter = "4";
+            else if (curElev == "S")
+                curFilter = "5";
+            else if (curElev == "T")
+                curFilter = "6";
+
+            string newFilter;
+
+            if (newElev == "A")
+                newFilter = "1";
+            else if (newElev == "B")
+                newFilter = "2";
+            else if (newElev == "C")
+                newFilter = "3";
+            else if (newElev == "D")
+                newFilter = "4";
+            else if (newElev == "S")
+                newFilter = "5";
+            else if (newElev == "T")
+                newFilter = "6";
+
+
             List<View> viewsList = GetAllViews(doc);
 
             List<ViewSheet> sheetsList = GetAllSheets(doc);
 
-            //List<ViewSheet> sheetGroup = GetAllSheetsByGroup(doc);
+            List<ViewSheet> sheetGroup = GetAllSheetsByGroup(doc);
 
             using (Transaction t = new Transaction(doc))
             {
@@ -63,15 +94,16 @@ namespace ElevationDesignation
                 foreach (ViewSheet curSheet in sheetsList)
                 {
                     string grpName = GetParameterValueByName(curSheet, "Group");
-                    string curFilter = GetParameterValueByName(curSheet, "Code Filter");
+                    string grpFilter = GetParameterValueByName(curSheet, "Code Filter");
 
                     if (curSheet.SheetNumber.Contains(curElev.ToLower()))
                         curSheet.SheetNumber = curSheet.SheetNumber.Replace(curElev.ToLower(), newElev.ToLower());
 
-                    //if (grpName.Contains(curElev))
-                    //    grpName = SetParameterByName(curSheet, grpName, newElev);
+                    if (grpName.Contains(curElev))
+                        grpName = SetParameterByName(curSheet, grpName, newElev);
 
-                    //if (grpFilter.Contains(curElev))
+                    if (grpFilter.Contains(curFilter))
+                        grpFilter = SetParameterByName(curSheet, grpFilter, newFilter);
                 }
 
                 t.Commit();
@@ -147,6 +179,17 @@ namespace ElevationDesignation
             return "";
         }
 
+        public static Parameter GetParameterByName(Element curElem, string paramName)
+        {
+            foreach (Parameter curParam in curElem.Parameters)
+            {
+                if (curParam.Definition.Name.ToString() == paramName)
+                    return curParam;
+            }
+
+            return null;
+        }
+
         internal static void SetParameterByName(Element element, string paramName, string value)
         {
             IList<Parameter> paramList = element.GetParameters(paramName);
@@ -157,6 +200,34 @@ namespace ElevationDesignation
 
                 param.Set(value);
             }
+        }
+
+        public static bool SetParameterValue(Element curElem, string paramName, string value)
+        {
+            Parameter curParam = GetParameterByName(curElem, paramName);
+
+            if (curParam != null)
+            {
+                curParam.Set(value);
+                return true;
+            }
+
+            return false;
+
+        }
+
+        public static bool SetParameterValue(Element curElem, string paramName, double value)
+        {
+            Parameter curParam = GetParameterByName(curElem, paramName);
+
+            if (curParam != null)
+            {
+                curParam.Set(value);
+                return true;
+            }
+
+            return false;
+
         }
 
         public static String GetMethod()
