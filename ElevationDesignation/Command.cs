@@ -79,7 +79,7 @@ namespace ElevationDesignation
 
             List<ViewSheet> sheetsList = GetAllSheets(doc);
 
-            List<ViewSheet> sheetGroup = GetAllSheetsByGroup(doc);
+            //List<ViewSheet> sheetGroup = GetAllSheetsByGroup(doc);
 
             using (Transaction t = new Transaction(doc))
             {
@@ -100,10 +100,10 @@ namespace ElevationDesignation
                         curSheet.SheetNumber = curSheet.SheetNumber.Replace(curElev.ToLower(), newElev.ToLower());
 
                     if (grpName.Contains(curElev))
-                        grpName = SetParameterByName(curSheet, grpName, newElev);
+                        grpName = grpName.Replace(curElev, newElev);
 
-                    if (grpFilter.Contains(curFilter))
-                        grpFilter = SetParameterByName(curSheet, grpFilter, newFilter);
+                    //if (grpFilter.Contains(curFilter))
+                    //    grpFilter = SetParameterByName(curSheet, grpFilter, newFilter);
                 }
 
                 t.Commit();
@@ -111,6 +111,8 @@ namespace ElevationDesignation
                 return Result.Succeeded;
             }           
         }
+
+        
 
         //public static List<ViewSheet> GetAllSheetsByGroup(Document doc)
         //{
@@ -179,6 +181,14 @@ namespace ElevationDesignation
             return "";
         }
 
+        private string SetParameterByName(Element curElem, string paramName, string value)
+        {
+            Parameter curParam = GetParameterByName(curElem, paramName);
+
+            curParam.Set(value);
+            return curParam.ToString();
+        }
+
         public static Parameter GetParameterByName(Element curElem, string paramName)
         {
             foreach (Parameter curParam in curElem.Parameters)
@@ -190,45 +200,7 @@ namespace ElevationDesignation
             return null;
         }
 
-        internal static void SetParameterByName(Element element, string paramName, string value)
-        {
-            IList<Parameter> paramList = element.GetParameters(paramName);
-
-            if (paramList != null)
-            {
-                Parameter param = paramList[0];
-
-                param.Set(value);
-            }
-        }
-
-        public static bool SetParameterValue(Element curElem, string paramName, string value)
-        {
-            Parameter curParam = GetParameterByName(curElem, paramName);
-
-            if (curParam != null)
-            {
-                curParam.Set(value);
-                return true;
-            }
-
-            return false;
-
-        }
-
-        public static bool SetParameterValue(Element curElem, string paramName, double value)
-        {
-            Parameter curParam = GetParameterByName(curElem, paramName);
-
-            if (curParam != null)
-            {
-                curParam.Set(value);
-                return true;
-            }
-
-            return false;
-
-        }
+        
 
         public static String GetMethod()
         {
