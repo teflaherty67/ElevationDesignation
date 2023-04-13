@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>Command ElevationDesignation</Text>
+    <Description>Some description for ElevationDesignation</Description>
+    <Assembly>ElevationDesignation.dll</Assembly>
+    <FullClassName>ElevationDesignation.Command</FullClassName>
+    <ClientId>b320a297-c73f-47d1-b647-6c1c974ff58f</ClientId>
+    <VendorId>com.YOUR COMPANY NAME</VendorId>
+    <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
+  </AddIn>
+  <AddIn Type="Application">
+    <Name>Application ElevationDesignation</Name>
+    <Assembly>ElevationDesignation.dll</Assembly>
+    <FullClassName>ElevationDesignation.App</FullClassName>
+    <ClientId>587e924e-90de-483e-813b-574ea8a3774d</ClientId>
+    <VendorId>com.YOUR COMPANY NAME</VendorId>
+    <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
+  </AddIn>
+</RevitAddIns>
