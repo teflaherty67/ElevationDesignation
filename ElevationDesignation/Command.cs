@@ -48,6 +48,8 @@ namespace ElevationDesignation
 
             List<ViewSheet> sheetsList = GetAllSheets(doc);
 
+            List<ViewSheet> sheetGroup = GetAllSheetsByGroup(doc);
+
             using (Transaction t = new Transaction(doc))
             {
                 t.Start("Replace Elevation Designation");
@@ -70,9 +72,38 @@ namespace ElevationDesignation
             }           
         }
 
-        private List<ViewSheet> GetAllSheets(Document doc)
+        public static List<ViewSheet> GetAllSheetsByGroup(Document doc)
         {
-            throw new NotImplementedException();
+            List<ViewSheet> sheets = GetAllSheets(doc);
+
+            List<ViewSheet> sheetGroup = new List<ViewSheet>();
+
+            foreach (ViewSheet sheet in sheets)
+            {
+                if(sheet.GroupId = true)
+                {
+                    sheetGroup.Add(sheet);
+                }
+
+                return sheetGroup;
+            }
+
+            return null;
+        }
+
+        public static List<ViewSheet> GetAllSheets(Document curDoc)
+        {
+            //get all sheets
+            FilteredElementCollector colSheets = new FilteredElementCollector(curDoc);
+            colSheets.OfCategory(BuiltInCategory.OST_Sheets);
+
+            List<ViewSheet> returnSheets = new List<ViewSheet>();
+            foreach (ViewSheet curSheet in colSheets.ToElements())
+            {
+                returnSheets.Add(curSheet);
+            }
+
+            return returnSheets;
         }
 
         public static List<View> GetAllViews(Document curDoc)
