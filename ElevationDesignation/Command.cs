@@ -44,7 +44,7 @@ namespace ElevationDesignation
             string curElev = curForm.GetComboBoxCurElevSelectedItem();
             string newElev = curForm.GetComboBoxNewElevSelectedItem();
 
-            string curFilter;
+            string curFilter = "";
 
             if (curElev == "A")
                 curFilter = "1";
@@ -59,7 +59,7 @@ namespace ElevationDesignation
             else if (curElev == "T")
                 curFilter = "6";
 
-            string newFilter;
+            string newFilter = "";
 
             if (newElev == "A")
                 newFilter = "1";
@@ -74,12 +74,9 @@ namespace ElevationDesignation
             else if (newElev == "T")
                 newFilter = "6";
 
-
             List<View> viewsList = GetAllViews(doc);
 
-            List<ViewSheet> sheetsList = GetAllSheets(doc);
-
-            //List<ViewSheet> sheetGroup = GetAllSheetsByGroup(doc);
+            List<ViewSheet> sheetsList = GetAllSheets(doc);           
 
             using (Transaction t = new Transaction(doc))
             {
@@ -100,38 +97,17 @@ namespace ElevationDesignation
                         curSheet.SheetNumber = curSheet.SheetNumber.Replace(curElev.ToLower(), newElev.ToLower());
 
                     if (grpName.Contains(curElev))
-                        grpName = grpName.Replace(curElev, newElev);
+                        SetParameterByName(curSheet, "Group", newElev);
 
-                    //if (grpFilter.Contains(curFilter))
-                    //    grpFilter = SetParameterByName(curSheet, grpFilter, newFilter);
+                    if (grpName.Contains(curElev) && grpFilter.Contains(curFilter))
+                        SetParameterByName(curSheet, "Code Filter", newFilter);
                 }
 
                 t.Commit();
 
                 return Result.Succeeded;
             }           
-        }
-
-        
-
-        //public static List<ViewSheet> GetAllSheetsByGroup(Document doc)
-        //{
-        //    List<ViewSheet> sheets = GetAllSheets(doc);
-
-        //    List<ViewSheet> sheetGroup = new List<ViewSheet>();
-
-        //    foreach (ViewSheet sheet in sheets)
-        //    {
-        //        if(sheet.GroupId = true)
-        //        {
-        //            sheetGroup.Add(sheet);
-        //        }
-
-        //        return sheetGroup;
-        //    }
-
-        //    return null;
-        //}
+        }       
 
         public static List<ViewSheet> GetAllSheets(Document curDoc)
         {
@@ -198,9 +174,7 @@ namespace ElevationDesignation
             }
 
             return null;
-        }
-
-        
+        }        
 
         public static String GetMethod()
         {
