@@ -39,10 +39,12 @@ namespace ElevationDesignation
 
             curForm.ShowDialog();
 
-            // get form data and do something
+            // get data from the form
 
             string curElev = curForm.GetComboBoxCurElevSelectedItem();
             string newElev = curForm.GetComboBoxNewElevSelectedItem();
+
+            // set some variables
 
             string curFilter = "";
 
@@ -75,12 +77,15 @@ namespace ElevationDesignation
                 newFilter = "6";
 
             List<View> viewsList = GetAllViews(doc);
-
-            List<ViewSheet> sheetsList = GetAllSheets(doc);           
+            List<ViewSheet> sheetsList = GetAllSheets(doc);
+            
+            // start the transaction
 
             using (Transaction t = new Transaction(doc))
             {
                 t.Start("Replace Elevation Designation");
+
+                // loop through the views and replace the elevation designation
 
                 foreach (View curView in viewsList)
                 {
@@ -88,22 +93,44 @@ namespace ElevationDesignation
                         curView.Name = curView.Name.Replace(curElev + " ", newElev + " ");
                 }
 
+                // loop through the sheets
+
                 foreach (ViewSheet curSheet in sheetsList)
                 {
+
+                    // set some variables
+
                     string grpName = GetParameterValueByName(curSheet, "Group");
                     string grpFilter = GetParameterValueByName(curSheet, "Code Filter");
+
+                    // change elevation designation in sheet number
 
                     if (curSheet.SheetNumber.Contains(curElev.ToLower()))
                         curSheet.SheetNumber = curSheet.SheetNumber.Replace(curElev.ToLower(), newElev.ToLower());
 
+                    // change the group name
+
                     if (grpName.Contains(curElev))
                         SetParameterByName(curSheet, "Group", newElev);
 
-                    if (grpName.Contains(curElev) && grpFilter.Contains(curFilter))
-                        SetParameterByName(curSheet, "Code Filter", newFilter);
+                    // update the code filter
+
+                    try
+                    {
+                        if (grpName.Contains(curElev) && grpFilter.Contains(curFilter))
+                            SetParameterByName(curSheet, "Code Filter", newFilter);
+                    }
+                    catch (Exception)
+                    {}                   
                 }
 
+                // commit the changes
+
                 t.Commit();
+
+                // alert the user
+
+                TaskDialog.Show("Complete", "Changed Elevation " + curElev + " to Elevation " + newElev);
 
                 return Result.Succeeded;
             }           
