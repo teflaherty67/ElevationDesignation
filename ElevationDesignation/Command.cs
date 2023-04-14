@@ -121,7 +121,9 @@ namespace ElevationDesignation
                             SetParameterByName(curSheet, "Code Filter", newFilter);
                     }
                     catch (Exception)
-                    {}                   
+                    {
+                        continue;
+                    }                   
                 }
 
                 // commit the changes
