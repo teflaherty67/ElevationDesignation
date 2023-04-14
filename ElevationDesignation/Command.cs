@@ -115,15 +115,8 @@ namespace ElevationDesignation
 
                     // update the code filter
 
-                    try
-                    {
-                        if (grpName.Contains(curElev) && grpFilter.Contains(curFilter))
-                            SetParameterByName(curSheet, "Code Filter", newFilter);
-                    }
-                    catch (Exception)
-                    {
-                        continue;
-                    }                   
+                    if (grpName.Contains(curElev) && grpFilter != null && grpFilter.Contains(curFilter))
+                        SetParameterByName(curSheet, "Code Filter", newFilter);                                     
                 }
 
                 // commit the changes
