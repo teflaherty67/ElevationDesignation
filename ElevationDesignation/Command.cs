@@ -110,20 +110,15 @@ namespace ElevationDesignation
 
                     // change the group name
 
+                   string grpNewName = GetLastCharacterInString(grpName, curElev, newElev);
+
                     if (grpName.Contains(curElev))
-                        SetParameterByName(curSheet, "Group", newElev);
+                        SetParameterByName(curSheet, "Group", grpNewName);
 
                     // update the code filter
 
-                    try
-                    {
-                        if (grpName.Contains(curElev) && grpFilter.Contains(curFilter))
-                            SetParameterByName(curSheet, "Code Filter", newFilter);
-                    }
-                    catch (Exception)
-                    {
-                        continue;
-                    }                   
+                    if (grpName.Contains(curElev) && grpFilter != null && grpFilter.Contains(curFilter))
+                        SetParameterByName(curSheet, "Code Filter", newFilter);                               
                 }
 
                 // commit the changes
@@ -136,7 +131,25 @@ namespace ElevationDesignation
 
                 return Result.Succeeded;
             }           
-        }       
+        }
+
+        private string GetLastCharacterInString(string grpName, string curElev, string newElev)
+        {
+            char lastChar = grpName[grpName.Length - 1];
+            
+
+            string grpLastChar = lastChar.ToString();
+            
+
+            if (grpLastChar == curElev)
+            {
+                return "Elevation " + newElev;
+            }
+            else
+            {
+                return newElev + grpName.Substring(1);
+            }
+        }
 
         public static List<ViewSheet> GetAllSheets(Document curDoc)
         {
