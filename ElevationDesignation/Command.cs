@@ -121,6 +121,10 @@ namespace ElevationDesignation
                         SetParameterByName(curSheet, "Code Filter", newFilter);                               
                 }
 
+                // add code to replace schedules
+
+                // get a list of the viewports on the cover sheet
+
                 // commit the changes
 
                 t.Commit();
@@ -216,7 +220,70 @@ namespace ElevationDesignation
             }
 
             return null;
-        }        
+        }
+
+        public static ViewSheet GetSheetByName(Document curDoc, string sheetName)
+        {
+            //get all sheets
+            List<ViewSheet> curSheets = GetAllSheets(curDoc);
+
+            //loop through sheets and check sheet name
+            foreach (ViewSheet curSheet in curSheets)
+            {
+                if (curSheet.Name == sheetName)
+                {
+                    return curSheet;
+                }
+            }
+
+            return null;
+        }
+
+        public static List<Viewport> GetAllViewports(Document curDoc)
+        {
+            //get all viewports
+            FilteredElementCollector vpCollector = new FilteredElementCollector(curDoc);
+            vpCollector.OfCategory(BuiltInCategory.OST_Viewports);
+
+            //output viewports to list
+            List<Viewport> vpList = new List<Viewport>();
+            foreach (Viewport curVP in vpCollector)
+            {
+                //add to list
+                vpList.Add(curVP);
+            }
+
+            return vpList;
+        }
+
+        public static List<string> GetAllViewportTypes(Document curDoc)
+        {
+            List<string> returnList = new List<string>();
+            List<Viewport> vpList = GetAllViewports(curDoc);
+
+            foreach (Viewport vp in vpList)
+            {
+                returnList.Add(vp.Name);
+            }
+
+            return returnList;
+        }
+
+        public static List<Viewport> GetAllViewportsInView(Document curDoc, ElementId curViewID)
+        {
+            FilteredElementCollector vpCollector = new FilteredElementCollector(curDoc, curViewID);
+            vpCollector.OfCategory(BuiltInCategory.OST_Viewports);
+
+            //output viewports to list
+            List<Viewport> vpList = new List<Viewport>();
+            foreach (Viewport curVP in vpCollector)
+            {
+                //add to list
+                vpList.Add(curVP);
+            }
+
+            return vpList;
+        }
 
         public static String GetMethod()
         {
