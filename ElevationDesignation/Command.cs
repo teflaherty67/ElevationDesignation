@@ -123,7 +123,11 @@ namespace ElevationDesignation
 
                 // add code to replace schedules
 
+                // need to check if the required schedules exist and, if not alert the user to create them
+
                 // get a list of the viewports on the cover sheet
+
+                // find the sheet with the roof ventilation schedules and replace those too
 
                 // commit the changes
 
