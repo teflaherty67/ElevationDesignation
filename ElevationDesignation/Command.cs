@@ -127,11 +127,21 @@ namespace ElevationDesignation
 
                 List<ScheduleSheetInstance> viewSchedules = GetAllScheduleSheetInstancesByName(doc, "Elevation " + curElev);
 
+                ViewSheet newSheet;
+                newSheet = GetSheetByElevationAndName(doc, newElev, "Cover");
+
+                uidoc.ActiveView = newSheet;
+
                 foreach (ScheduleSheetInstance curSchedule in viewSchedules)
                 {
                     if (curSchedule.Name.Contains(curElev))
                     {
-                        Location instanceLoc = curSchedule.Location;
+                        ElementId newSheetId = newSheet.Id;
+                        ElementId curScheduleId = curSchedule.Id;
+
+                        XYZ instanceLoc = curSchedule.Point;                        
+                        
+                        ScheduleSheetInstance newSSI = ScheduleSheetInstance.Create(doc, newSheetId, curScheduleId, instanceLoc);
                     }
                 }
 
@@ -145,6 +155,21 @@ namespace ElevationDesignation
 
                 return Result.Succeeded;
             }           
+        }
+
+        private ViewSheet GetSheetByElevationAndName(Document doc, string newElev, string sheetName)
+        {
+            List<ViewSheet> sheetLIst = GetAllSheets(doc);
+
+            foreach (ViewSheet curVS in sheetLIst)
+            {
+                if(curVS.SheetNumber.Contains(newElev) && curVS.Name == sheetName)
+                {
+                    return curVS;
+                }
+            }
+
+            return null;
         }
 
         private List<ScheduleSheetInstance> GetAllScheduleSheetInstancesByName(Document doc, string elevName)
