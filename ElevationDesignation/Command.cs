@@ -118,16 +118,22 @@ namespace ElevationDesignation
                     // update the code filter
 
                     if (grpName.Contains(curElev) && grpFilter != null && grpFilter.Contains(curFilter))
-                        SetParameterByName(curSheet, "Code Filter", newFilter);                               
+                        SetParameterByName(curSheet, "Code Filter", newFilter);
                 }
 
-                // add code to replace schedules
+                // final step: replace the schedules on the sheets
 
-                // need to check if the required schedules exist and, if not alert the user to create them
+                // set the cover sheet as the actvie view
 
-                // get a list of the viewports on the cover sheet
+                List<ScheduleSheetInstance> viewSchedules = GetAllScheduleSheetInstancesByName(doc, "Elevation " + curElev);
 
-                // find the sheet with the roof ventilation schedules and replace those too
+                foreach (ScheduleSheetInstance curSchedule in viewSchedules)
+                {
+                    if (curSchedule.Name.Contains(curElev))
+                    {
+                        Location instanceLoc = curSchedule.Location;
+                    }
+                }
 
                 // commit the changes
 
@@ -139,6 +145,36 @@ namespace ElevationDesignation
 
                 return Result.Succeeded;
             }           
+        }
+
+        private List<ScheduleSheetInstance> GetAllScheduleSheetInstancesByName(Document doc, string elevName)
+        {
+            List<ScheduleSheetInstance> ssiList = GetAllScheduleSheetInstances(doc);
+
+            List<ScheduleSheetInstance> returnList = new List<ScheduleSheetInstance>();
+
+            foreach (ScheduleSheetInstance curInstance in ssiList)
+            {
+                if (curInstance.Name.Contains(elevName))
+                    returnList.Add(curInstance);
+            }
+
+            return returnList;
+        }
+
+        private List<ScheduleSheetInstance> GetAllScheduleSheetInstances(Document doc)
+        {
+            FilteredElementCollector colSSI = new FilteredElementCollector(doc);
+            colSSI.OfClass(typeof(ScheduleSheetInstance));
+
+            List<ScheduleSheetInstance> returnList = new List<ScheduleSheetInstance>();
+
+            foreach(ScheduleSheetInstance curInstance in colSSI) 
+            {
+                returnList.Add(curInstance);
+            }
+
+            return returnList;
         }
 
         private string GetLastCharacterInString(string grpName, string curElev, string newElev)
@@ -226,56 +262,10 @@ namespace ElevationDesignation
             return null;
         }
 
-        public static ViewSheet GetSheetByName(Document curDoc, string sheetName)
-        {
-            //get all sheets
-            List<ViewSheet> curSheets = GetAllSheets(curDoc);
-
-            //loop through sheets and check sheet name
-            foreach (ViewSheet curSheet in curSheets)
-            {
-                if (curSheet.Name == sheetName)
-                {
-                    return curSheet;
-                }
-            }
-
-            return null;
-        }
-
         public static List<Viewport> GetAllViewports(Document curDoc)
         {
             //get all viewports
             FilteredElementCollector vpCollector = new FilteredElementCollector(curDoc);
-            vpCollector.OfCategory(BuiltInCategory.OST_Viewports);
-
-            //output viewports to list
-            List<Viewport> vpList = new List<Viewport>();
-            foreach (Viewport curVP in vpCollector)
-            {
-                //add to list
-                vpList.Add(curVP);
-            }
-
-            return vpList;
-        }
-
-        public static List<string> GetAllViewportTypes(Document curDoc)
-        {
-            List<string> returnList = new List<string>();
-            List<Viewport> vpList = GetAllViewports(curDoc);
-
-            foreach (Viewport vp in vpList)
-            {
-                returnList.Add(vp.Name);
-            }
-
-            return returnList;
-        }
-
-        public static List<Viewport> GetAllViewportsInView(Document curDoc, ElementId curViewID)
-        {
-            FilteredElementCollector vpCollector = new FilteredElementCollector(curDoc, curViewID);
             vpCollector.OfCategory(BuiltInCategory.OST_Viewports);
 
             //output viewports to list
