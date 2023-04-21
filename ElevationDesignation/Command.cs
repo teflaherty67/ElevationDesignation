@@ -91,7 +91,7 @@ namespace ElevationDesignation
 
                 // check if the schedules for the new elevation exist
 
-                if (scheduleList != null)
+                if (scheduleList.Count != 0)
                 {
                     // if yes, execute the command
 
@@ -175,7 +175,7 @@ namespace ElevationDesignation
                     return Result.Succeeded;
                 }
 
-                else if (scheduleList == null)
+                else if (scheduleList.Count == 0)
                 {
                     // if not, alert the user & exit
 
