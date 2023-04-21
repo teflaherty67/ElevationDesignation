@@ -166,26 +166,26 @@ namespace ElevationDesignation
 
                     // alert the user
 
-                    string msgResult = "Changed Elevation " + curElev + " to Elevation " + newElev;
-                    string msgSucceeded = "Complete";
-                    Forms.MessageBoxButton msgButtons2 = Forms.MessageBoxButton.OK;
+                    string msgSucceeded = "Changed Elevation " + curElev + " to Elevation " + newElev;
+                    string titleSucceeded = "Complete";
+                    Forms.MessageBoxButton btnSucceeded= Forms.MessageBoxButton.OK;
 
-                    Forms.MessageBox.Show(msgResult, msgSucceeded, msgButtons2, Forms.MessageBoxImage.Information);
+                    Forms.MessageBox.Show(msgSucceeded, titleSucceeded, btnSucceeded, Forms.MessageBoxImage.Information);
 
                     return Result.Succeeded;
                 }
 
-                else (scheduleList == null)
+                else if (scheduleList == null)
                 {
                     // if not, alert the user & exit
 
-                    string msgResult2 = "The schedules for the new elevation do not exist. Create the schedules and try again";
-                    string msgFailed = "Warning";
-                    Forms.MessageBoxButton msgButtons = Forms.MessageBoxButton.OK;
-                    Forms.MessageBoxResult result = Forms.MessageBox.Show(msgResult2, msgFailed, msgButtons, Forms.MessageBoxImage.Warning);
-
-                    return Result.Failed;                        
+                    string msgFailed = "The schedules for the new elevation do not exist. Create the schedules and try again";
+                    string titleFailed = "Warning";
+                    Forms.MessageBoxButton btnFailed = Forms.MessageBoxButton.OK;
+                    Forms.MessageBoxResult result = Forms.MessageBox.Show(msgFailed, titleFailed, btnFailed, Forms.MessageBoxImage.Warning);                                           
                 }
+
+                return Result.Failed;
             }
         }
 
