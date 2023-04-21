@@ -8,7 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-
+using Forms = System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
 #endregion
 
 namespace ElevationDesignation
@@ -26,9 +28,8 @@ namespace ElevationDesignation
             Application app = uiapp.Application;
             Document doc = uidoc.Document;
 
-            // put any code needed for the form here
-
             // open form
+
             frmReplaceElevation curForm = new frmReplaceElevation()
             {
                 Width = 320,
@@ -77,84 +78,197 @@ namespace ElevationDesignation
                 newFilter = "6";
 
             List<View> viewsList = GetAllViews(doc);
+
             List<ViewSheet> sheetsList = GetAllSheets(doc);
-            
+
+            List<ViewSchedule> scheduleList = GetAllSchedulesByElevation(doc, newElev);
+
             // start the transaction
 
             using (Transaction t = new Transaction(doc))
             {
                 t.Start("Replace Elevation Designation");
 
-                // loop through the views and replace the elevation designation
+                // check if the schedules for the new elevation exist
 
-                foreach (View curView in viewsList)
+                if (scheduleList != null)
                 {
-                    if (curView.Name.Contains(curElev + " "))
-                        curView.Name = curView.Name.Replace(curElev + " ", newElev + " ");
-                }
+                    // if yes, execute the command
 
-                // loop through the sheets
+                    // loop through the views and replace the elevation designation
 
-                foreach (ViewSheet curSheet in sheetsList)
-                {
-
-                    // set some variables
-
-                    string grpName = GetParameterValueByName(curSheet, "Group");
-                    string grpFilter = GetParameterValueByName(curSheet, "Code Filter");
-
-                    // change elevation designation in sheet number
-
-                    if (curSheet.SheetNumber.Contains(curElev.ToLower()))
-                        curSheet.SheetNumber = curSheet.SheetNumber.Replace(curElev.ToLower(), newElev.ToLower());
-
-                    // change the group name
-
-                   string grpNewName = GetLastCharacterInString(grpName, curElev, newElev);
-
-                    if (grpName.Contains(curElev))
-                        SetParameterByName(curSheet, "Group", grpNewName);
-
-                    // update the code filter
-
-                    if (grpName.Contains(curElev) && grpFilter != null && grpFilter.Contains(curFilter))
-                        SetParameterByName(curSheet, "Code Filter", newFilter);
-                }
-
-                // final step: replace the schedules on the sheets
-
-                // set the cover sheet as the actvie view
-
-                List<ScheduleSheetInstance> viewSchedules = GetAllScheduleSheetInstancesByName(doc, "Elevation " + curElev);
-
-                ViewSheet newSheet;
-                newSheet = GetSheetByElevationAndName(doc, newElev, "Cover");
-
-                uidoc.ActiveView = newSheet;
-
-                foreach (ScheduleSheetInstance curSchedule in viewSchedules)
-                {
-                    if (curSchedule.Name.Contains(curElev))
+                    foreach (View curView in viewsList)
                     {
-                        ElementId newSheetId = newSheet.Id;
-                        ElementId curScheduleId = curSchedule.Id;
-
-                        XYZ instanceLoc = curSchedule.Point;                        
-                        
-                        ScheduleSheetInstance newSSI = ScheduleSheetInstance.Create(doc, newSheetId, curScheduleId, instanceLoc);
+                        if (curView.Name.Contains(curElev + " "))
+                            curView.Name = curView.Name.Replace(curElev + " ", newElev + " ");
                     }
+
+                    // loop through the sheets
+
+                    foreach (ViewSheet curSheet in sheetsList)
+                    {
+                        // set some variables
+
+                        string grpName = GetParameterValueByName(curSheet, "Group");
+                        string grpFilter = GetParameterValueByName(curSheet, "Code Filter");
+
+                        // change elevation designation in sheet number
+
+                        if (curSheet.SheetNumber.Contains(curElev.ToLower()))
+                            curSheet.SheetNumber = curSheet.SheetNumber.Replace(curElev.ToLower(), newElev.ToLower());
+
+                        // change the group name
+
+                        string grpNewName = GetLastCharacterInString(grpName, curElev, newElev);
+
+                        if (grpName.Contains(curElev))
+                            SetParameterByName(curSheet, "Group", grpNewName);
+
+                        // update the code filter
+
+                        if (grpName.Contains(curElev) && grpFilter != null && grpFilter.Contains(curFilter))
+                            SetParameterByName(curSheet, "Code Filter", newFilter);
+                    }
+
+                    // final step: replace the schedules on the sheets
+
+                    // set the cover sheet as the actvie view
+
+                    ViewSheet newSheet;
+                    newSheet = GetSheetByElevationAndName(doc, newElev, "Cover");
+
+                    uidoc.ActiveView = newSheet;
+
+                    List<ScheduleSheetInstance> viewSchedules = GetAllScheduleSheetInstancesByNameAndView(doc, "Elevation " + curElev, uidoc.ActiveView);
+
+                    foreach (ScheduleSheetInstance curSchedule in viewSchedules)
+                    {
+                        if (curSchedule.Name.Contains(curElev))
+                        {
+                            ElementId newSheetId = newSheet.Id;
+                            string schedName = curSchedule.Name;
+                            string newSchedName = schedName.Substring(0, schedName.Length - 2) + newElev;
+
+                            ViewSchedule newSchedule = GetScheduleByName(doc, newSchedName); // equal to ID of schedule to replace existing
+
+                            XYZ instanceLoc = curSchedule.Point;
+
+                            doc.Delete(curSchedule.Id); // remove existing schedule
+
+                            // add new schedule
+                            ScheduleSheetInstance newSSI = ScheduleSheetInstance.Create(doc, newSheetId, newSchedule.Id, instanceLoc);
+                        }
+                    }
+
+                    // commit the changes
+
+                    t.Commit();
+
+                    // alert the user
+
+                    string msgResult = "Changed Elevation " + curElev + " to Elevation " + newElev;
+                    string msgSucceeded = "Complete";
+                    Forms.MessageBoxButton msgButtons2 = Forms.MessageBoxButton.OK;
+
+                    Forms.MessageBox.Show(msgResult, msgSucceeded, msgButtons2, Forms.MessageBoxImage.Information);
+
+                    return Result.Succeeded;
                 }
 
-                // commit the changes
+                else (scheduleList == null)
+                {
+                    // if not, alert the user & exit
 
-                t.Commit();
+                    string msgResult2 = "The schedules for the new elevation do not exist. Create the schedules and try again";
+                    string msgFailed = "Warning";
+                    Forms.MessageBoxButton msgButtons = Forms.MessageBoxButton.OK;
+                    Forms.MessageBoxResult result = Forms.MessageBox.Show(msgResult2, msgFailed, msgButtons, Forms.MessageBoxImage.Warning);
 
-                // alert the user
+                    return Result.Failed;                        
+                }
+            }
+        }
 
-                TaskDialog.Show("Complete", "Changed Elevation " + curElev + " to Elevation " + newElev);
+        private List<ViewSchedule> GetAllSchedulesByElevation(Document doc, string newElev)
+        {
+            List<ViewSchedule> scheduleList = GetAllSchedules(doc);
 
-                return Result.Succeeded;
-            }           
+            List<ViewSchedule> returnList = new List<ViewSchedule>();
+
+            foreach (ViewSchedule curVS in scheduleList)
+            {
+                if (curVS.Name.Contains(newElev))
+                {
+                    returnList.Add(curVS);
+                }
+
+                return returnList;
+            }
+
+            return null;
+        }
+
+        private List<ViewSchedule> GetAllSchedules(Document doc)
+        {
+            List<ViewSchedule> schedList = new List<ViewSchedule>();
+
+            FilteredElementCollector curCollector = new FilteredElementCollector(doc);
+            curCollector.OfClass(typeof(ViewSchedule));
+
+            //loop through views and check if schedule - if so then put into schedule list
+            foreach (ViewSchedule curView in curCollector)
+            {
+                if (curView.ViewType == ViewType.Schedule)
+                {
+                    schedList.Add((ViewSchedule)curView);
+                }
+            }
+
+            return schedList;
+        }
+
+        private ViewSchedule GetScheduleByName(Document doc, string v)
+        {
+            FilteredElementCollector collector = new FilteredElementCollector(doc);
+            collector.OfClass(typeof(ViewSchedule));
+
+            foreach (ViewSchedule curSchedule in collector)
+            {
+                if (curSchedule.Name == v)
+                    return curSchedule;
+            }
+
+            return null;
+        }
+
+        private List<ScheduleSheetInstance> GetAllScheduleSheetInstancesByNameAndView(Document doc, string elevName, View activeView)
+        {
+            List<ScheduleSheetInstance> ssiList = GetAllScheduleSheetInstancesByView(doc, activeView);
+
+            List<ScheduleSheetInstance> returnList = new List<ScheduleSheetInstance>();
+
+            foreach (ScheduleSheetInstance curInstance in ssiList)
+            {
+                if (curInstance.Name.Contains(elevName))
+                    returnList.Add(curInstance);
+            }
+
+            return returnList;
+        }
+
+        private List<ScheduleSheetInstance> GetAllScheduleSheetInstancesByView(Document doc, View activeView)
+        {
+            FilteredElementCollector colSSI = new FilteredElementCollector(doc, activeView.Id);
+            colSSI.OfClass(typeof(ScheduleSheetInstance));
+
+            List<ScheduleSheetInstance> returnList = new List<ScheduleSheetInstance>();
+
+            foreach (ScheduleSheetInstance curInstance in colSSI)
+            {
+                returnList.Add(curInstance);
+            }
+
+            return returnList;
         }
 
         private ViewSheet GetSheetByElevationAndName(Document doc, string newElev, string sheetName)
@@ -163,7 +277,7 @@ namespace ElevationDesignation
 
             foreach (ViewSheet curVS in sheetLIst)
             {
-                if(curVS.SheetNumber.Contains(newElev) && curVS.Name == sheetName)
+                if (curVS.SheetNumber.Contains(newElev) && curVS.Name == sheetName)
                 {
                     return curVS;
                 }
@@ -194,9 +308,28 @@ namespace ElevationDesignation
 
             List<ScheduleSheetInstance> returnList = new List<ScheduleSheetInstance>();
 
-            foreach(ScheduleSheetInstance curInstance in colSSI) 
+            foreach (ScheduleSheetInstance curInstance in colSSI)
             {
                 returnList.Add(curInstance);
+            }
+
+            return returnList;
+        }
+
+        private List<ViewSheet> GetRoofSheet(Document doc)
+        {
+            List<ViewSheet> returnList = new List<ViewSheet>();
+
+            // get all schedules
+            List<ScheduleSheetInstance> scheduleSheetInstances = GetAllScheduleSheetInstances(doc);
+
+            foreach (ScheduleSheetInstance curSSI in scheduleSheetInstances)
+            {
+                if (curSSI.Name.Contains("Roof"))
+                {
+                    ViewSheet curSheet = doc.GetElement(curSSI.OwnerViewId) as ViewSheet;
+                    returnList.Add(curSheet);
+                }
             }
 
             return returnList;
@@ -205,10 +338,10 @@ namespace ElevationDesignation
         private string GetLastCharacterInString(string grpName, string curElev, string newElev)
         {
             char lastChar = grpName[grpName.Length - 1];
-            
+
 
             string grpLastChar = lastChar.ToString();
-            
+
 
             if (grpLastChar == curElev)
             {
