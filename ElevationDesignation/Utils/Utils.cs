@@ -10,6 +10,50 @@ namespace ElevationDesignation
 {
     internal static class Utils
     {
+
+        #region Parameters
+
+        internal static string GetParameterValueByName(Element element, string paramName)
+        {
+            IList<Parameter> paramList = element.GetParameters(paramName);
+
+            if (paramList != null)
+                try
+                {
+                    Parameter param = paramList[0];
+                    string paramValue = param.AsValueString();
+                    return paramValue;
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    return null;
+                }
+
+            return "";
+        }
+
+        internal static string SetParameterByName(Element curElem, string paramName, string value)
+        {
+            Parameter curParam = GetParameterByName(curElem, paramName);
+
+            curParam.Set(value);
+            return curParam.ToString();
+        }
+
+        internal static Parameter GetParameterByName(Element curElem, string paramName)
+        {
+            foreach (Parameter curParam in curElem.Parameters)
+            {
+                if (curParam.Definition.Name.ToString() == paramName)
+                    return curParam;
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region Ribbon
         internal static RibbonPanel CreateRibbonPanel(UIControlledApplication app, string tabName, string panelName)
         {
             RibbonPanel currentPanel = GetRibbonPanelByName(app, tabName, panelName);
@@ -31,74 +75,236 @@ namespace ElevationDesignation
             return null;
         }
 
-        internal static string GetParameterValueByName(Element element, string paramName)
+        #endregion
+
+        #region Schedules
+
+        internal static List<ViewSchedule> GetAllSchedulesByElevation(Document doc, string newElev)
         {
-            IList<Parameter> paramList = element.GetParameters(paramName);
+            List<ViewSchedule> m_scheduleList = GetAllSchedules(doc);
 
-            if (paramList != null)
-                try
-                {
-                    Parameter param = paramList[0];
-                    string paramValue = param.AsValueString();
-                    return paramValue;
-                }
-                catch (System.ArgumentOutOfRangeException)
-                {
-                    return null;
-                }
+            List<ViewSchedule> m_returnList = new List<ViewSchedule>();
 
-            return "";
-        }
-
-        public static Parameter GetParameterByName(Element curElem, string paramName)
-        {
-            foreach (Parameter curParam in curElem.Parameters)
+            foreach (ViewSchedule curVS in m_scheduleList)
             {
-                if (curParam.Definition.Name.ToString() == paramName)
-                    return curParam;
+                if (curVS.Name.EndsWith(newElev))
+                {
+                    m_returnList.Add(curVS);
+                }
+
+                return m_returnList;
             }
 
             return null;
         }
 
-        internal static void SetParameterByName(Element element, string paramName, string value)
+        internal static List<ViewSchedule> GetAllSchedules(Document doc)
         {
-            IList<Parameter> paramList = element.GetParameters(paramName);
+            List<ViewSchedule> schedList = new List<ViewSchedule>();
 
-            if (paramList != null)
+            FilteredElementCollector curCollector = new FilteredElementCollector(doc);
+            curCollector.OfClass(typeof(ViewSchedule));
+
+            //loop through views and check if schedule - if so then put into schedule list
+            foreach (ViewSchedule curView in curCollector)
             {
-                Parameter param = paramList[0];
+                if (curView.ViewType == ViewType.Schedule)
+                {
+                    schedList.Add((ViewSchedule)curView);
+                }
+            }
 
-                param.Set(value);
+            return schedList;
+        }
+
+        internal static ViewSchedule GetScheduleByName(Document doc, string v)
+        {
+            FilteredElementCollector collector = new FilteredElementCollector(doc);
+            collector.OfClass(typeof(ViewSchedule));
+
+            foreach (ViewSchedule curSchedule in collector)
+            {
+                if (curSchedule.Name == v)
+                    return curSchedule;
+            }
+
+            return null;
+        }
+
+        internal static List<ScheduleSheetInstance> GetAllScheduleSheetInstancesByNameAndView(Document doc, string elevName, View activeView)
+        {
+            List<ScheduleSheetInstance> ssiList = GetAllScheduleSheetInstancesByView(doc, activeView);
+
+            List<ScheduleSheetInstance> returnList = new List<ScheduleSheetInstance>();
+
+            foreach (ScheduleSheetInstance curInstance in ssiList)
+            {
+                if (curInstance.Name.Contains(elevName))
+                    returnList.Add(curInstance);
+            }
+
+            return returnList;
+        }
+
+        internal static List<ScheduleSheetInstance> GetAllScheduleSheetInstancesByView(Document doc, View activeView)
+        {
+            FilteredElementCollector colSSI = new FilteredElementCollector(doc, activeView.Id);
+            colSSI.OfClass(typeof(ScheduleSheetInstance));
+
+            List<ScheduleSheetInstance> returnList = new List<ScheduleSheetInstance>();
+
+            foreach (ScheduleSheetInstance curInstance in colSSI)
+            {
+                returnList.Add(curInstance);
+            }
+
+            return returnList;
+        }       
+
+        internal static List<ScheduleSheetInstance> GetAllScheduleSheetInstancesByName(Document doc, string elevName)
+        {
+            List<ScheduleSheetInstance> ssiList = GetAllScheduleSheetInstances(doc);
+
+            List<ScheduleSheetInstance> returnList = new List<ScheduleSheetInstance>();
+
+            foreach (ScheduleSheetInstance curInstance in ssiList)
+            {
+                if (curInstance.Name.Contains(elevName))
+                    returnList.Add(curInstance);
+            }
+
+            return returnList;
+        }
+
+        internal static List<ScheduleSheetInstance> GetAllScheduleSheetInstances(Document doc)
+        {
+            FilteredElementCollector colSSI = new FilteredElementCollector(doc);
+            colSSI.OfClass(typeof(ScheduleSheetInstance));
+
+            List<ScheduleSheetInstance> returnList = new List<ScheduleSheetInstance>();
+
+            foreach (ScheduleSheetInstance curInstance in colSSI)
+            {
+                returnList.Add(curInstance);
+            }
+
+            return returnList;
+        }               
+
+        #endregion
+
+        #region Sheets
+
+        internal static List<ViewSheet> GetAllSheets(Document curDoc)
+        {
+            //get all sheets
+            FilteredElementCollector m_colSheets = new FilteredElementCollector(curDoc);
+            m_colSheets.OfCategory(BuiltInCategory.OST_Sheets);
+
+            List<ViewSheet> m_returnSheets = new List<ViewSheet>();
+            foreach (ViewSheet curSheet in m_colSheets.ToElements())
+            {
+                m_returnSheets.Add(curSheet);
+            }
+
+            return m_returnSheets;
+        }
+
+        internal static ViewSheet GetSheetByElevationAndName(Document doc, string newElev, string sheetName)
+        {
+            List<ViewSheet> sheetLIst = GetAllSheets(doc);
+
+            foreach (ViewSheet curVS in sheetLIst)
+            {
+                if (curVS.SheetNumber.Contains(newElev) && curVS.Name == sheetName)
+                {
+                    return curVS;
+                }
+            }
+
+            return null;
+        }
+
+        internal static List<ViewSheet> GetRoofSheet(Document doc)
+        {
+            List<ViewSheet> returnList = new List<ViewSheet>();
+
+            // get all schedules
+            List<ScheduleSheetInstance> scheduleSheetInstances = GetAllScheduleSheetInstances(doc);
+
+            foreach (ScheduleSheetInstance curSSI in scheduleSheetInstances)
+            {
+                if (curSSI.Name.Contains("Roof"))
+                {
+                    ViewSheet curSheet = doc.GetElement(curSSI.OwnerViewId) as ViewSheet;
+                    returnList.Add(curSheet);
+                }
+            }
+
+            return returnList;
+        }
+
+        #endregion
+
+        #region Strings
+
+        internal static string GetLastCharacterInString(string grpName, string curElev, string newElev)
+        {
+            char lastChar = grpName[grpName.Length - 1];
+
+
+            string grpLastChar = lastChar.ToString();
+
+
+            if (grpLastChar == curElev)
+            {
+                return "Elevation " + newElev;
+            }
+            else
+            {
+                return newElev + grpName.Substring(1);
             }
         }
 
-        public static bool SetParameterValue(Element curElem, string paramName, string value)
-        {
-            Parameter curParam = GetParameterByName(curElem, paramName);
+        #endregion
 
-            if (curParam != null)
+        #region Views
+
+        public static List<View> GetAllViews(Document curDoc)
+        {
+            FilteredElementCollector m_colviews = new FilteredElementCollector(curDoc);
+            m_colviews.OfCategory(BuiltInCategory.OST_Views);
+
+            List<View> m_returnViews = new List<View>();
+            foreach (View curView in m_colviews.ToElements())
             {
-                curParam.Set(value);
-                return true;
+                m_returnViews.Add(curView);
             }
 
-            return false;
-
+            return m_returnViews;
         }
 
-        public static bool SetParameterValue(Element curElem, string paramName, double value)
-        {
-            Parameter curParam = GetParameterByName(curElem, paramName);
+        #endregion
 
-            if (curParam != null)
+        #region Viewports
+
+        internal static List<Viewport> GetAllViewports(Document curDoc)
+        {
+            //get all viewports
+            FilteredElementCollector m_vpCollector = new FilteredElementCollector(curDoc);
+            m_vpCollector.OfCategory(BuiltInCategory.OST_Viewports);
+
+            //output viewports to list
+            List<Viewport> m_vpList = new List<Viewport>();
+            foreach (Viewport curVP in m_vpCollector)
             {
-                curParam.Set(value);
-                return true;
+                //add to list
+                m_vpList.Add(curVP);
             }
 
-            return false;
-
+            return m_vpList;
         }
+
+        #endregion
     }
 }
