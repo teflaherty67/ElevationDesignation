@@ -89,6 +89,10 @@ namespace ElevationDesignation
             {
                 t.Start("Replace Elevation Designation");
 
+                SubTransaction st1 = new SubTransaction(curDoc);
+
+                st1.Start();
+
                 // check if the schedules for the new elevation exist
 
                 if (scheduleList.Count != 0)
@@ -132,7 +136,13 @@ namespace ElevationDesignation
                             Utils.SetParameterByName(curSheet, "Code Filter", newFilter);
                     }
 
+                    st1.Commit();
+
                     // final step: replace the schedules on the sheets
+
+                    SubTransaction st2 = new SubTransaction(curDoc);
+
+                    st2.Start();
 
                     // set the cover sheet as the actvie view
 
@@ -161,6 +171,8 @@ namespace ElevationDesignation
                             ScheduleSheetInstance newSSI = ScheduleSheetInstance.Create(curDoc, newSheetId, newSchedule.Id, instanceLoc);
                         }
                     }
+
+                    st2.Commit();
 
                     // commit the changes
 
