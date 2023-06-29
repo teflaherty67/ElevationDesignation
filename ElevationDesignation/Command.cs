@@ -136,31 +136,31 @@ namespace ElevationDesignation
 
                     // set the cover sheet as the actvie view
 
-                    //ViewSheet newSheet;
-                    //newSheet = GetSheetByElevationAndName(doc, newElev, "Cover");
+                    ViewSheet newSheet;
+                    newSheet = Utils.GetSheetByElevationAndName(curDoc, newElev, "Cover");
 
-                    //uidoc.ActiveView = newSheet;
+                    uidoc.ActiveView = newSheet;
 
-                    //List<ScheduleSheetInstance> viewSchedules = GetAllScheduleSheetInstancesByNameAndView(doc, "Elevation " + curElev, uidoc.ActiveView);
+                    List<ScheduleSheetInstance> viewSchedules = Utils.GetAllScheduleSheetInstancesByNameAndView(curDoc, "Elevation " + curElev, uidoc.ActiveView);
 
-                    //foreach (ScheduleSheetInstance curSchedule in viewSchedules)
-                    //{
-                    //    if (curSchedule.Name.Contains(curElev))
-                    //    {
-                    //        ElementId newSheetId = newSheet.Id;
-                    //        string schedName = curSchedule.Name;
-                    //        string newSchedName = schedName.Substring(0, schedName.Length - 2) + newElev;
+                    foreach (ScheduleSheetInstance curSchedule in viewSchedules)
+                    {
+                        if (curSchedule.Name.Contains(curElev))
+                        {
+                            ElementId newSheetId = newSheet.Id;
+                            string schedName = curSchedule.Name;
+                            string newSchedName = schedName.Substring(0, schedName.Length - 2) + newElev;
 
-                    //        ViewSchedule newSchedule = GetScheduleByName(doc, newSchedName); // equal to ID of schedule to replace existing
+                            ViewSchedule newSchedule = Utils.GetScheduleByName(curDoc, newSchedName); // equal to ID of schedule to replace existing
 
-                    //        XYZ instanceLoc = curSchedule.Point;
+                            XYZ instanceLoc = curSchedule.Point;
 
-                    //        doc.Delete(curSchedule.Id); // remove existing schedule
+                            curDoc.Delete(curSchedule.Id); // remove existing schedule
 
-                    //        // add new schedule
-                    //        ScheduleSheetInstance newSSI = ScheduleSheetInstance.Create(doc, newSheetId, newSchedule.Id, instanceLoc);
-                    //    }
-                    //}
+                            // add new schedule
+                            ScheduleSheetInstance newSSI = ScheduleSheetInstance.Create(curDoc, newSheetId, newSchedule.Id, instanceLoc);
+                        }
+                    }
 
                     // commit the changes
 

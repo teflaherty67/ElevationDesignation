@@ -90,12 +90,10 @@ namespace ElevationDesignation
                 if (curVS.Name.EndsWith(newElev))
                 {
                     m_returnList.Add(curVS);
-                }
-
-                return m_returnList;
+                }                
             }
 
-            return null;
+            return m_returnList;
         }
 
         internal static List<ViewSchedule> GetAllSchedules(Document doc)
