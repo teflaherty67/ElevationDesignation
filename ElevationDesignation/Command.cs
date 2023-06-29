@@ -89,60 +89,63 @@ namespace ElevationDesignation
             {
                 t.Start("Replace Elevation Designation");
 
-                SubTransaction st1 = new SubTransaction(curDoc);
-
-                st1.Start();
-
                 // check if the schedules for the new elevation exist
 
-                if (scheduleList.Count != 0)
+                using (SubTransaction subT1 = new SubTransaction(curDoc))
                 {
-                    // if yes, execute the command
+                    subT1.Start();
 
-                    // loop through the views and replace the elevation designation
-
-                    foreach (View curView in viewsList)
+                    if (scheduleList.Count != 0)
                     {
-                        if (curView.Name.Contains(curElev + " ")
-                            || curView.Name.Contains(curElev + "-")
-                            || curView.Name.Contains(curElev + "_"))
-                            curView.Name = curView.Name.Replace(curElev, newElev);
+                        // if yes, execute the command
+
+                        // loop through the views and replace the elevation designation
+
+                        foreach (View curView in viewsList)
+                        {
+                            if (curView.Name.Contains(curElev + " ")
+                                || curView.Name.Contains(curElev + "-")
+                                || curView.Name.Contains(curElev + "_"))
+                                curView.Name = curView.Name.Replace(curElev, newElev);
+                        }
+
+                        // loop through the sheets
+
+                        foreach (ViewSheet curSheet in sheetsList)
+                        {
+                            // set some variables
+
+                            string grpName = Utils.GetParameterValueByName(curSheet, "Group");
+                            string grpFilter = Utils.GetParameterValueByName(curSheet, "Code Filter");
+
+                            // change elevation designation in sheet number
+
+                            if (curSheet.SheetNumber.Contains(curElev.ToLower()))
+                                curSheet.SheetNumber = curSheet.SheetNumber.Replace(curElev.ToLower(), newElev.ToLower());
+
+                            // change the group name
+
+                            string grpNewName = Utils.GetLastCharacterInString(grpName, curElev, newElev);
+
+                            if (grpName.Contains(curElev))
+                                Utils.SetParameterByName(curSheet, "Group", grpNewName);
+
+                            // update the code filter
+
+                            if (grpName.Contains(curElev) && grpFilter != null && grpFilter.Contains(curFilter))
+                                Utils.SetParameterByName(curSheet, "Code Filter", newFilter);
+
+                        }
                     }
 
-                    // loop through the sheets
+                    subT1.Commit();
+                }
 
-                    foreach (ViewSheet curSheet in sheetsList)
-                    {
-                        // set some variables
+                // final step: replace the schedules on the sheets
 
-                        string grpName = Utils.GetParameterValueByName(curSheet, "Group");
-                        string grpFilter = Utils.GetParameterValueByName(curSheet, "Code Filter");
-
-                        // change elevation designation in sheet number
-
-                        if (curSheet.SheetNumber.Contains(curElev.ToLower()))
-                            curSheet.SheetNumber = curSheet.SheetNumber.Replace(curElev.ToLower(), newElev.ToLower());
-
-                        // change the group name
-
-                        string grpNewName = Utils.GetLastCharacterInString(grpName, curElev, newElev);
-
-                        if (grpName.Contains(curElev))
-                            Utils.SetParameterByName(curSheet, "Group", grpNewName);
-
-                        // update the code filter
-
-                        if (grpName.Contains(curElev) && grpFilter != null && grpFilter.Contains(curFilter))
-                            Utils.SetParameterByName(curSheet, "Code Filter", newFilter);
-                    }
-
-                    st1.Commit();
-
-                    // final step: replace the schedules on the sheets
-
-                    SubTransaction st2 = new SubTransaction(curDoc);
-
-                    st2.Start();
+                using (SubTransaction subT2 = new SubTransaction(curDoc))
+                {
+                    subT2.Start();
 
                     // set the cover sheet as the actvie view
 
@@ -172,11 +175,12 @@ namespace ElevationDesignation
                         }
                     }
 
-                    st2.Commit();
+                    subT2.Commit();
+                }
 
-                    // commit the changes
-
-                    t.Commit();
+                t.Commit();
+            }
+        }
 
                     // alert the user
 
@@ -187,7 +191,7 @@ namespace ElevationDesignation
                     Forms.MessageBox.Show(msgSucceeded, titleSucceeded, btnSucceeded, Forms.MessageBoxImage.Information);
 
                     return Result.Succeeded;
-                }
+    }
 
                 else if (scheduleList.Count == 0)
                 {
@@ -201,9 +205,7 @@ namespace ElevationDesignation
 
                 return Result.Failed;
             }
-        }
-
-        
+        }        
 
         public static String GetMethod()
         {

@@ -214,7 +214,7 @@ namespace ElevationDesignation
 
             foreach (ViewSheet curVS in sheetLIst)
             {
-                if (curVS.SheetNumber.Contains(newElev) && curVS.Name == sheetName)
+                if (curVS.SheetNumber.Contains(newElev) && curVS.Name.Contains(sheetName))
                 {
                     return curVS;
                 }
