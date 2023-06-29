@@ -208,7 +208,7 @@ namespace ElevationDesignation
             return m_returnSheets;
         }
 
-        internal static ViewSheet GetSheetByElevationAndName(Document doc, string newElev, string sheetName)
+        internal static ViewSheet GetSheetByElevationAndNameContains(Document doc, string newElev, string sheetName)
         {
             List<ViewSheet> sheetLIst = GetAllSheets(doc);
 

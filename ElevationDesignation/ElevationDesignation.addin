@@ -4,7 +4,7 @@
     <Text>Command ElevationDesignation</Text>
     <Description>Some description for ElevationDesignation</Description>
     <Assembly>ElevationDesignation.dll</Assembly>
-    <FullClassName>ElevationDesignation.Command</FullClassName>
+    <FullClassName>ElevationDesignation.cmdElevationDesignation</FullClassName>
     <ClientId>b320a297-c73f-47d1-b647-6c1c974ff58f</ClientId>
     <VendorId>com.YOUR COMPANY NAME</VendorId>
     <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
