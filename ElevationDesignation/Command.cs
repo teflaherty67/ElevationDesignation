@@ -101,7 +101,7 @@ namespace ElevationDesignation
                     {
                         if (curView.Name.Contains(curElev + " ")
                             || curView.Name.Contains(curElev + "-")
-                            || curView.Name.Contains(curElev + "_"));
+                            || curView.Name.Contains(curElev + "_"))
                             curView.Name = curView.Name.Replace(curElev, newElev);
                     }
 
