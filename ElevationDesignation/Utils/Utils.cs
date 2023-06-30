@@ -210,11 +210,11 @@ namespace ElevationDesignation
 
         internal static ViewSheet GetSheetByElevationAndNameContains(Document doc, string newElev, string sheetName)
         {
-            List<ViewSheet> sheetLIst = GetAllSheets(doc);
+            List<ViewSheet> sheetLIst = GetAllSheets(doc);           
 
             foreach (ViewSheet curVS in sheetLIst)
             {
-                if (curVS.SheetNumber.Contains(newElev) && curVS.Name.Contains(sheetName))
+                if (curVS.SheetNumber.Contains(newElev.ToLower()) && curVS.Name.Contains(sheetName))
                 {
                     return curVS;
                 }

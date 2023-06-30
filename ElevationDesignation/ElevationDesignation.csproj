@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="Classes\ButtonDataClass.cs" />
+    <Compile Include="cmdElevDesignation.cs" />
     <Compile Include="cmdElevationDesignation.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
