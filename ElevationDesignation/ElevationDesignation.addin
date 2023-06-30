@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RevitAddIns>
+<RevitAddIns>  
   <AddIn Type="Command">
-    <Text>Command ElevationDesignation</Text>
-    <Description>Some description for ElevationDesignation</Description>
+    <Text>Command ElevDesignation</Text>
+    <Description>Some description for ElevDesignation</Description>
     <Assembly>ElevationDesignation.dll</Assembly>
-    <FullClassName>ElevationDesignation.cmdElevationDesignation</FullClassName>
-    <ClientId>b320a297-c73f-47d1-b647-6c1c974ff58f</ClientId>
-    <VendorId>com.YOUR COMPANY NAME</VendorId>
-    <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
+    <FullClassName>ElevationDesignation.cmdElevDesignation</FullClassName>
+    <ClientId>b320d297-c73f-47d1-b647-6c1c974ff58f</ClientId>
+    <VendorId>Rourke-Burke and Associates</VendorId>
+    <VendorDescription>Rourke-Burke and Associates, www.lusad.com</VendorDescription>
   </AddIn>
   <AddIn Type="Application">
     <Name>Application ElevationDesignation</Name>
     <Assembly>ElevationDesignation.dll</Assembly>
     <FullClassName>ElevationDesignation.App</FullClassName>
     <ClientId>587e924e-90de-483e-813b-574ea8a3774d</ClientId>
-    <VendorId>com.YOUR COMPANY NAME</VendorId>
-    <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
+    <VendorId>Rourke-Burke and Associates</VendorId>
+    <VendorDescription>Rourke-Burke and Associates, www.lusad.com</VendorDescription>
   </AddIn>
 </RevitAddIns>

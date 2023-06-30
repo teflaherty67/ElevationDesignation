@@ -141,7 +141,7 @@ namespace ElevationDesignation
                                 // set some variables
                                 ElementId newSheetId = newCover.Id;
                                 string schedName = curSchedule.Name;
-                                string newSchedName = schedName.Substring(0, schedName.Length - 2) + newElev;
+                                string newSchedName = schedName.Substring(0, schedName.Length - 1) + newElev;
 
                                 // get the schedule name
                                 ViewSchedule newSchedule = Utils.GetScheduleByName(curDoc, newSchedName); // equal to ID of schedule to replace existing
@@ -179,9 +179,9 @@ namespace ElevationDesignation
                             if (curSchedule.Name.Contains(curElev))
                             {
                                 // set some variables
-                                ElementId newSheetId = newCover.Id;
+                                ElementId newSheetId = newRoof.Id;
                                 string schedName = curSchedule.Name;
-                                string newSchedName = schedName.Substring(0, schedName.Length - 2) + newElev;
+                                string newSchedName = schedName.Substring(0, schedName.Length - 1) + newElev;
 
                                 // get the schedule name
                                 ViewSchedule newSchedule = Utils.GetScheduleByName(curDoc, newSchedName); // equal to ID of schedule to replace existing
@@ -214,7 +214,7 @@ namespace ElevationDesignation
                 return Result.Succeeded;
             }
 
-            else if (sheetsList.Count == 0)
+            else if (newElevList.Count != curElevList.Count)
             {
                 // if the schedules don't exist, alert the user & exit
                 string msgFailed = "The schedules for the new elevation do not exist. Create the schedules and try again";
