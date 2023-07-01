@@ -101,7 +101,8 @@ namespace ElevationDesignation
                             // set some variables
                             string grpName = Utils.GetParameterValueByName(curSheet, "Group");
                             string grpFilter = Utils.GetParameterValueByName(curSheet, "Code Filter");
-
+                            string codeMasonry = Utils.GetParameterValueByName(curSheet, "Code Masonry");
+                            
                             // change elevation designation in sheet number
                             if (curSheet.SheetNumber.Contains(curElev.ToLower()))
                                 curSheet.SheetNumber = curSheet.SheetNumber.Replace(curElev.ToLower(), newElev.ToLower());
@@ -115,6 +116,21 @@ namespace ElevationDesignation
                             // update the code filter
                             if (grpName.Contains(curElev))
                                 Utils.SetParameterByName(curSheet, "Code Filter", newFilter);
+
+                            // update the masonry code
+                            if (grpName.Contains(newElev))
+                                Utils.SetParameterByName(curSheet, "Code Masonry", "0");
+
+                            if (grpNewName.StartsWith(newElev))
+                            {
+                                string[] curGroup = grpNewName.Split('-', '|');
+
+                                string curCode = curGroup[1];
+
+                                string newCode = curGroup[0] + "-" + "0" + "|" + curGroup[2] + "|" + curGroup[3] + "|" + curGroup[4];
+
+                                Utils.SetParameterByName(curSheet, "Group", newCode);
+                            }
                         }
 
                         // commit the 1st transaction

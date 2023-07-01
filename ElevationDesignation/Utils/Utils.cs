@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace ElevationDesignation
 {
@@ -208,11 +209,11 @@ namespace ElevationDesignation
             return m_returnSheets;
         }
 
-        internal static ViewSheet GetSheetByElevationAndNameContains(Document doc, string newElev, string sheetName)
+        internal static ViewSheet GetSheetByElevationAndNameContains(Document curDoc, string newElev, string sheetName)
         {
-            List<ViewSheet> sheetLIst = GetAllSheets(doc);           
+            List<ViewSheet> sheetList = GetAllSheets(curDoc);           
 
-            foreach (ViewSheet curVS in sheetLIst)
+            foreach (ViewSheet curVS in sheetList)
             {
                 if (curVS.SheetNumber.Contains(newElev.ToLower()) && curVS.Name.Contains(sheetName))
                 {
@@ -223,23 +224,20 @@ namespace ElevationDesignation
             return null;
         }
 
-        internal static List<ViewSheet> GetRoofSheet(Document doc)
+        internal static List<ViewSheet> GetAllSheetsByElevation(Document curDoc, string curElev)
         {
-            List<ViewSheet> returnList = new List<ViewSheet>();
+            //get all sheets
+            List<ViewSheet> m_sheetList = GetAllSheets(curDoc);
 
-            // get all schedules
-            List<ScheduleSheetInstance> scheduleSheetInstances = GetAllScheduleSheetInstances(doc);
+            List<ViewSheet> m_returnSheets = new List<ViewSheet>();
 
-            foreach (ScheduleSheetInstance curSSI in scheduleSheetInstances)
+            foreach (ViewSheet curSheet in m_sheetList)
             {
-                if (curSSI.Name.Contains("Roof"))
-                {
-                    ViewSheet curSheet = doc.GetElement(curSSI.OwnerViewId) as ViewSheet;
-                    returnList.Add(curSheet);
-                }
+                if (curSheet.SheetNumber.Contains(curElev))
+                m_returnSheets.Add(curSheet);
             }
 
-            return returnList;
+            return m_returnSheets;
         }
 
         #endregion
@@ -250,17 +248,23 @@ namespace ElevationDesignation
         {
             char lastChar = grpName[grpName.Length - 1];
 
+            char firstChar = grpName[0];
 
             string grpLastChar = lastChar.ToString();
 
+            string grpFirstChar = firstChar.ToString();
 
             if (grpLastChar == curElev)
             {
                 return "Elevation " + newElev;
             }
-            else
+            else if (grpFirstChar == curElev)
             {
                 return newElev + grpName.Substring(1);
+            }
+            else
+            {
+                return grpName;
             }
         }
 
@@ -301,6 +305,11 @@ namespace ElevationDesignation
             }
 
             return m_vpList;
+        }
+
+        internal static string GetStringBetweenCharacters(string codeMasonry, char v1, char v2)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
