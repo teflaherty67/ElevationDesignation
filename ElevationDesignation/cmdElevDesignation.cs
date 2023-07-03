@@ -115,16 +115,13 @@ namespace ElevationDesignation
                             Forms.MessageBoxButton btnViewDup = Forms.MessageBoxButton.OK;
 
                             Forms.MessageBox.Show(msgViewDup, titleViewDup, btnViewDup, Forms.MessageBoxImage.Warning);
-                        }                        
+                        }
+                        
+                        int countSheets = 0;
 
-                        // loop through the sheets
+                        // loop through the sheets & change sheet number & name
                         foreach (ViewSheet curSheet in sheetsList)
                         {
-                            // set some variables
-                            string grpName = Utils.GetParameterValueByName(curSheet, "Group");
-                            string grpFilter = Utils.GetParameterValueByName(curSheet, "Code Filter");
-                            string curMasonry = Utils.GetParameterValueByName(curSheet, "Code Masonry");
-
                             try
                             {
                                 // change elevation designation in sheet number
@@ -133,12 +130,62 @@ namespace ElevationDesignation
                             }
                             catch (Autodesk.Revit.Exceptions.ArgumentException)
                             {
+                                countSheets++;
+
                                 continue;
                             }
-                            
+                        }
+
+                        // if the views already exist, alert the user & continue
+                        if (countSheets > 0)
+                        {
+                            string msgSheetDup = "The sheets already exist";
+                            string titleSheetDup = "Duplicate Sheet Names";
+                            Forms.MessageBoxButton btnSheetDup = Forms.MessageBoxButton.OK;
+
+                            Forms.MessageBox.Show(msgSheetDup, titleSheetDup, btnSheetDup, Forms.MessageBoxImage.Warning);
+                        }
+
+                        // loop through the sheets & update parameters
+                        foreach (ViewSheet curSheet in sheetsList)
+                        {
+                            // set some variables
+                            string grpName = Utils.GetParameterValueByName(curSheet, "Group");
+                            string grpFilter = Utils.GetParameterValueByName(curSheet, "Code Filter");
+                            string curMasonry = Utils.GetParameterValueByName(curSheet, "Code Masonry");
+
+                            string originalName = curSheet.Name;
+                            string newName = "";                            
+
                             // remove the code filter from the sheet names
+                            if (originalName.Length > 0 && originalName.Contains("-"))
+                            {
+                                string sheetName = originalName.Split('-')[0];
+
+                                // check to see if the original name ends with "g"
+                                if (originalName.EndsWith("g"))
+                                {
+                                    newName = sheetName + "-g";
+                                }
+                                else
+                                {
+                                    newName = sheetName;
+                                }
+
+                                // set the new sheet name
+                                curSheet.Name = newName;
+                            }
 
                             // rename the exterior elevation sheets
+                            if (countSheets > 0)
+                            {
+                                if (curSheet.Name.Contains("Elevation " + newElev))
+                                    curSheet.Name = "Exterior Elevations";
+                            }
+                            else if (curSheet.Name.Contains("Elevation " + curElev))
+                            {
+                                curSheet.Name = "Exterior Elevations";
+                            }
 
                             // change the group name
                             string grpNewName = Utils.GetLastCharacterInString(grpName, curElev, newElev);
