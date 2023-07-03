@@ -31,8 +31,8 @@ namespace ElevationDesignation
             // open form
             frmReplaceElevation curForm = new frmReplaceElevation()
             {
-                Width = 320,
-                Height = 180,
+                Width = 340,
+                Height = 200,
                 WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen,
                 Topmost = true,
             };
@@ -43,6 +43,7 @@ namespace ElevationDesignation
 
             string curElev = curForm.GetComboBoxCurElevSelectedItem();
             string newElev = curForm.GetComboBoxNewElevSelectedItem();
+            string codeMasonry = curForm.GetComboBoxCodeMasonrySelectedItem();
 
             // set some variables
 
@@ -83,17 +84,38 @@ namespace ElevationDesignation
                         // start the 1st transaction
                         t.Start("Rename views & sheets");
 
+                        int countView = 0;
+
                         // loop through the views
                         foreach (View curView in viewsList)
                         {
-                            // rename the views
-                            if (curView.Name.Contains(curElev + " "))
-                                curView.Name = curView.Name.Replace(curElev + " ", newElev + " ");
-                            if (curView.Name.Contains(curElev + "-"))
-                                curView.Name = curView.Name.Replace(curElev + "-", newElev + " ");
-                            if (curView.Name.Contains(curElev + "_"))
-                                curView.Name = curView.Name.Replace(curElev + "_", newElev + " ");
+                            try
+                            {
+                                // rename the views
+                                if (curView.Name.Contains(curElev + " "))
+                                    curView.Name = curView.Name.Replace(curElev + " ", newElev + " ");
+                                if (curView.Name.Contains(curElev + "-"))
+                                    curView.Name = curView.Name.Replace(curElev + "-", newElev + " ");
+                                if (curView.Name.Contains(curElev + "_"))
+                                    curView.Name = curView.Name.Replace(curElev + "_", newElev + " ");
+                            }
+                            catch (Autodesk.Revit.Exceptions.ArgumentException)
+                            {
+                                countView++;
+
+                                continue;
+                            }                            
                         }
+
+                        // if the views already exist, alert the user & continue
+                        if (countView > 0)
+                        {
+                            string msgViewDup = "The views already exist";
+                            string titleViewDup = "Duplicate View Names";
+                            Forms.MessageBoxButton btnViewDup = Forms.MessageBoxButton.OK;
+
+                            Forms.MessageBox.Show(msgViewDup, titleViewDup, btnViewDup, Forms.MessageBoxImage.Warning);
+                        }                        
 
                         // loop through the sheets
                         foreach (ViewSheet curSheet in sheetsList)
@@ -101,11 +123,22 @@ namespace ElevationDesignation
                             // set some variables
                             string grpName = Utils.GetParameterValueByName(curSheet, "Group");
                             string grpFilter = Utils.GetParameterValueByName(curSheet, "Code Filter");
-                            string codeMasonry = Utils.GetParameterValueByName(curSheet, "Code Masonry");
+                            string curMasonry = Utils.GetParameterValueByName(curSheet, "Code Masonry");
+
+                            try
+                            {
+                                // change elevation designation in sheet number
+                                if (curSheet.SheetNumber.Contains(curElev.ToLower()))
+                                    curSheet.SheetNumber = curSheet.SheetNumber.Replace(curElev.ToLower(), newElev.ToLower());
+                            }
+                            catch (Autodesk.Revit.Exceptions.ArgumentException)
+                            {
+                                continue;
+                            }
                             
-                            // change elevation designation in sheet number
-                            if (curSheet.SheetNumber.Contains(curElev.ToLower()))
-                                curSheet.SheetNumber = curSheet.SheetNumber.Replace(curElev.ToLower(), newElev.ToLower());
+                            // remove the code filter from the sheet names
+
+                            // rename the exterior elevation sheets
 
                             // change the group name
                             string grpNewName = Utils.GetLastCharacterInString(grpName, curElev, newElev);
@@ -119,7 +152,7 @@ namespace ElevationDesignation
 
                             // update the masonry code
                             if (grpName.Contains(newElev))
-                                Utils.SetParameterByName(curSheet, "Code Masonry", "0");
+                                Utils.SetParameterByName(curSheet, "Code Masonry", codeMasonry);
 
                             if (grpNewName.StartsWith(newElev))
                             {
@@ -127,7 +160,7 @@ namespace ElevationDesignation
 
                                 string curCode = curGroup[1];
 
-                                string newCode = curGroup[0] + "-" + "0" + "|" + curGroup[2] + "|" + curGroup[3] + "|" + curGroup[4];
+                                string newCode = curGroup[0] + "-" + codeMasonry + "|" + curGroup[2] + "|" + curGroup[3] + "|" + curGroup[4];
 
                                 Utils.SetParameterByName(curSheet, "Group", newCode);
                             }
@@ -178,7 +211,7 @@ namespace ElevationDesignation
 
                         // set the roof plan for newElev as the active view
                         ViewSheet newRoof;
-                        newRoof = Utils.GetSheetByElevationAndNameContains(curDoc, newElev, "Roof");
+                        newRoof = Utils.GetSheetByElevationAndNameContains(curDoc, newElev, "Roof Plan");
 
                         uidoc.ActiveView = newRoof;
 

@@ -35,6 +35,15 @@ namespace ElevationDesignation
 
             cmbCurElev.SelectedIndex = 0;
             cmbNewElev.SelectedIndex = 0;
+
+            List<string> listMasonry = new List<string> { "0", "25", "50", "75", "100" };
+
+            foreach (string masonry in listMasonry)
+            {
+                cmbCodeMasonry.Items.Add(masonry);
+            }
+
+            cmbCodeMasonry.SelectedIndex = 0;
         }
 
         public string GetComboBoxCurElevSelectedItem()
@@ -47,6 +56,11 @@ namespace ElevationDesignation
             return cmbNewElev.SelectedItem.ToString();
         }
 
+        public string GetComboBoxCodeMasonrySelectedItem()
+        {
+            return cmbCodeMasonry.SelectedItem.ToString();
+        }
+
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = true;
@@ -57,6 +71,11 @@ namespace ElevationDesignation
         {
             this.DialogResult = false;
             this.Close();
+        }
+
+        private void btnHelp_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
