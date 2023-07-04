@@ -39,7 +39,12 @@ namespace ElevationDesignation
 
             curForm.ShowDialog();
 
-            // get data from the form
+            if (DialogResult == false)
+            {
+                return Result.Failed;
+            }
+
+                // get data from the form
 
             string curElev = curForm.GetComboBoxCurElevSelectedItem();
             string newElev = curForm.GetComboBoxNewElevSelectedItem();
