@@ -37,14 +37,9 @@ namespace ElevationDesignation
                 Topmost = true,
             };
 
-            curForm.ShowDialog();
+            curForm.ShowDialog();            
 
-            if (DialogResult == false)
-            {
-                return Result.Failed;
-            }
-
-                // get data from the form
+            // get data from the form
 
             string curElev = curForm.GetComboBoxCurElevSelectedItem();
             string newElev = curForm.GetComboBoxNewElevSelectedItem();
@@ -67,11 +62,13 @@ namespace ElevationDesignation
             else if (newElev == "T")
                 newFilter = "6";
 
-            List<View> viewsList = Utils.GetAllViews(curDoc);
+            // get all the views & sheets
 
+            List<View> viewsList = Utils.GetAllViews(curDoc);
             List<ViewSheet> sheetsList = Utils.GetAllSheets(curDoc);
 
             // check if all the schedules exist for newElev
+
             List<ViewSchedule> curElevList = Utils.GetAllSchedulesByElevation(curDoc, curElev);
             List<ViewSchedule> newElevList = Utils.GetAllSchedulesByElevation(curDoc, newElev);
 
