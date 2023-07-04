@@ -138,7 +138,7 @@ namespace ElevationDesignation
                             }
                         }
 
-                        // if the views already exist, alert the user & continue
+                        // if the sheets already exist, alert the user & continue
                         if (countSheets > 0)
                         {
                             string msgSheetDup = "The sheets already exist";
