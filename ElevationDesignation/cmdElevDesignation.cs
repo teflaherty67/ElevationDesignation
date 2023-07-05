@@ -37,9 +37,14 @@ namespace ElevationDesignation
                 Topmost = true,
             };
 
-            curForm.ShowDialog();            
+            curForm.ShowDialog();
 
-            // get data from the form
+            if (curForm.DialogResult == false)
+            {
+                return Result.Failed;
+            }
+
+                // get data from the form
 
             string curElev = curForm.GetComboBoxCurElevSelectedItem();
             string newElev = curForm.GetComboBoxNewElevSelectedItem();
@@ -190,6 +195,11 @@ namespace ElevationDesignation
                             }
 
                             // change the group name
+                            if (countSheets > 0)
+                            { 
+
+                            }
+
                             string grpNewName = Utils.GetLastCharacterInString(grpName, curElev, newElev);
 
                             if (grpName.Contains(curElev))

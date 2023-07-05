@@ -58,7 +58,25 @@ namespace ElevationDesignation
 
         public string GetComboBoxCodeMasonrySelectedItem()
         {
-            return cmbCodeMasonry.SelectedItem.ToString();
+            string content = "";
+
+            ComboBoxItem selectedItem = cmbCodeMasonry.SelectedItem as ComboBoxItem;
+
+            if (selectedItem == null)
+            {
+                content = cmbCodeMasonry.Text;
+            }
+            else
+            {
+                content = selectedItem.Content.ToString();
+            }
+
+            return content;
+        }
+
+        private void cmbCodeMasonry_TextInput(object sender, TextChangedEventArgs e)
+        {
+            ManualTextEnter = cmbCodeMasonry.Text;
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
