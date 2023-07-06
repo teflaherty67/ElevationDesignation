@@ -74,6 +74,8 @@ namespace ElevationDesignation
             return content;
         }
 
+        public string ManualTextEnter = "";
+
         private void cmbCodeMasonry_TextInput(object sender, TextChangedEventArgs e)
         {
             ManualTextEnter = cmbCodeMasonry.Text;
