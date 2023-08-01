@@ -1,5 +1,10 @@
-﻿using System;
+﻿using Autodesk.Revit.DB;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +17,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Diagnostics;
+
 
 
 namespace ElevationDesignation
@@ -95,7 +102,7 @@ namespace ElevationDesignation
 
         private void btnHelp_Click(object sender, RoutedEventArgs e)
         {
-
+            Process.Start("https://lifestyle-usa-design.atlassian.net/l/cp/L6yQ60y1");
         }
     }
 }
