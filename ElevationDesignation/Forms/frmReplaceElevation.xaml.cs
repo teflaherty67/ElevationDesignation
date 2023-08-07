@@ -74,10 +74,10 @@ namespace ElevationDesignation
             return content;
         }
 
-        private void cmbCodeMasonry_TextInput(object sender, TextChangedEventArgs e)
-        {
-            ManualTextEnter = cmbCodeMasonry.Text;
-        }
+        //private void cmbCodeMasonry_TextInput(object sender, TextChangedEventArgs e)
+        //{
+        //    ManualTextEnter = cmbCodeMasonry.Text;
+        //}
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
