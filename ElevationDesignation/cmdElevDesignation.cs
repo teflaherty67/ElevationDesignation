@@ -230,7 +230,9 @@ namespace ElevationDesignation
 
                         if (countSheets == 0)
                         {
-                            foreach (ViewSheet curSheet in sheetsList)
+                            List<ViewSheet> newSheetList = Utils.GetAllSheetsByElevation(curDoc, curElev.ToLower());
+
+                            foreach (ViewSheet curSheet in newSheetList)
                             {
                                 // create some variables for parameters to be updated
                                 string curCat = Utils.GetParameterValueByName(curSheet, "Category");
