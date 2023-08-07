@@ -235,7 +235,7 @@ namespace ElevationDesignation
             return null;
         }
 
-        internal static List<ViewSheet> GetAllSheetsByElevation(Document curDoc, string curElev)
+        internal static List<ViewSheet> GetAllSheetsByElevation(Document curDoc, string elevDesignation)
         {
             //get all sheets
             List<ViewSheet> m_sheetList = GetAllSheets(curDoc);
@@ -244,7 +244,7 @@ namespace ElevationDesignation
 
             foreach (ViewSheet curSheet in m_sheetList)
             {
-                if (curSheet.SheetNumber.Contains(curElev))
+                if (curSheet.SheetNumber.Contains(elevDesignation))
                 m_returnSheets.Add(curSheet);
             }
 

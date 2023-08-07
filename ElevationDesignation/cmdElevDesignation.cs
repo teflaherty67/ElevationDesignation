@@ -187,11 +187,13 @@ namespace ElevationDesignation
 
                             TaskDialogResult tdDupSheetsRes = tdDupSheets.Show();
 
-                            foreach (ViewSheet curSheet in sheetsList)
+                            List<ViewSheet> newElevSheetList = Utils.GetAllSheetsByElevation(curDoc, newElev.ToLower());
+
+                            foreach (ViewSheet curSheet in newElevSheetList)
                             {
                                 // create some variables for parameters to be updated
                                 Parameter curCat = Utils.GetParameterByNameAndWritable(curSheet, "Category");
-                                string curGrp = Utils.GetParameterValueByName(curSheet, "Group");
+                                string curGrp = Utils.GetParameterValueByName(curSheet, "Group");                               
 
                                 if (curGrp.Contains(newElev))
                                 {
