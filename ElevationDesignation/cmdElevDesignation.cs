@@ -194,35 +194,35 @@ namespace ElevationDesignation
                                 curSheet.Name = "Exterior Elevations";
                             }
 
-                            // change the group name
-                            if (countSheets > 0)
-                            { 
-
-                            }
-
                             string grpNewName = Utils.GetLastCharacterInString(grpName, curElev, newElev);
 
-                            if (grpName.Contains(curElev))
-                                Utils.SetParameterByName(curSheet, "Group", grpNewName);
+                            // change the group name
+                            if (countSheets == 0)
+                            { 
+                                if (grpName.Contains(curElev))
+                                    Utils.SetParameterByName(curSheet, "Group", grpNewName);
 
-                            // update the code filter
-                            if (grpName.Contains(curElev))
-                                Utils.SetParameterByName(curSheet, "Code Filter", newFilter);
+                                // update the code filter
+                                if (grpName.Contains(curElev))
+                                    Utils.SetParameterByName(curSheet, "Code Filter", newFilter);
 
-                            // update the masonry code
-                            if (grpName.Contains(newElev))
-                                Utils.SetParameterByName(curSheet, "Code Masonry", codeMasonry);
-
-                            if (grpNewName.StartsWith(newElev))
-                            {
-                                string[] curGroup = grpNewName.Split('-', '|');
-
-                                string curCode = curGroup[1];
-
-                                string newCode = curGroup[0] + "-" + codeMasonry + "|" + curGroup[2] + "|" + curGroup[3] + "|" + curGroup[4];
-
-                                Utils.SetParameterByName(curSheet, "Group", newCode);
+                                // update the masonry code
+                                if (grpName.Contains(newElev))
+                                    Utils.SetParameterByName(curSheet, "Code Masonry", codeMasonry);                               
                             }
+                            else if (countSheets > 0)
+                            {
+                                if (grpNewName.StartsWith(newElev))
+                                {
+                                    string[] curGroup = grpNewName.Split('-', '|');
+
+                                    string curCode = curGroup[1];
+
+                                    string newCode = curGroup[0] + "-" + codeMasonry + "|" + curGroup[2] + "|" + curGroup[3] + "|" + curGroup[4];
+
+                                    Utils.SetParameterByName(curSheet, "Group", newCode);
+                                }
+                            }                           
                         }
 
                         // commit the 1st transaction
