@@ -130,11 +130,17 @@ namespace ElevationDesignation
                         }
                         
                         // create a counter for the sheets
-                        int countSheets = 0;
+                        int countSheets = 0;  
 
                         // loop through the sheets & change sheet number & name
                         foreach (ViewSheet curSheet in sheetsList)
                         {
+                            // create some variable for parameters to be updated
+                            string curCat = Utils.GetParameterValueByName(curSheet, "Category");
+                            string curGrp = Utils.GetParameterValueByName(curSheet, "Group");
+
+                            string grpNewName = Utils.GetLastCharacterInString(curGrp, curElev, newElev);
+
                             try
                             {
                                 // change elevation designation in sheet number
@@ -148,31 +154,10 @@ namespace ElevationDesignation
 
                                 continue;
                             }
-                        }
 
-                        // if the sheets already exist, alert the user & continue
-                        if (countSheets > 0)
-                        {
-                            TaskDialog tdDupSheets = new TaskDialog("Error");
-                            tdDupSheets.MainIcon = TaskDialogIcon.TaskDialogIconInformation;
-                            tdDupSheets.Title = "Duplicate Sheet Names";
-                            tdDupSheets.TitleAutoPrefix = false;
-                            tdDupSheets.MainContent = "The sheets already exist";
-                            tdDupSheets.CommonButtons = TaskDialogCommonButtons.Close;
-
-                            TaskDialogResult tdDupSheetsRes = tdDupSheets.Show();                            
-                        }
-
-                        // loop through the sheets & update parameters
-                        foreach (ViewSheet curSheet in sheetsList)
-                        {
-                            // set some variables
-                            string grpName = Utils.GetParameterValueByName(curSheet, "Group");
-                            string grpFilter = Utils.GetParameterValueByName(curSheet, "Code Filter");
-                            string curMasonry = Utils.GetParameterValueByName(curSheet, "Code Masonry");
-
+                            // set some varibales
                             string originalName = curSheet.Name;
-                            string newName = "";                            
+                            string newName = "";
 
                             // remove the code filter from the sheet names
                             if (originalName.Length > 0 && originalName.Contains("-"))
@@ -182,7 +167,7 @@ namespace ElevationDesignation
                                 // check to see if the original name ends with "g"
                                 if (originalName.EndsWith("g"))
                                 {
-                                    newName = sheetName + "-g";
+                                    newName = sheetName + " -g";
                                 }
                                 else
                                 {
@@ -193,38 +178,46 @@ namespace ElevationDesignation
                                 curSheet.Name = newName;
                             }
 
-                            // rename the exterior elevation sheets
+                            if (curSheet.Name.StartsWith("Elevation"))
+                                curSheet.Name = "Exterior Elevations";
+
+                            // if the sheets already exist, alert the user & continue
                             if (countSheets > 0)
                             {
-                                if (curSheet.Name.Contains("Elevation " + newElev))
-                                    curSheet.Name = "Exterior Elevations";
-                            }
-                            else if (curSheet.Name.Contains("Elevation " + curElev))
-                            {
-                                curSheet.Name = "Exterior Elevations";
-                            }
+                                TaskDialog tdDupSheets = new TaskDialog("Error");
+                                tdDupSheets.MainIcon = TaskDialogIcon.TaskDialogIconInformation;
+                                tdDupSheets.Title = "Duplicate Sheet Names";
+                                tdDupSheets.TitleAutoPrefix = false;
+                                tdDupSheets.MainContent = "The sheets already exist";
+                                tdDupSheets.CommonButtons = TaskDialogCommonButtons.Close;
 
-                            string grpNewName = Utils.GetLastCharacterInString(grpName, curElev, newElev);
-
-                            // change the group name
-                            if (countSheets == 0)
-                            { 
-                                if (grpName.Contains(curElev))
-                                    Utils.SetParameterByName(curSheet, "Group", grpNewName);
-
-                                // update the code filter
-                                if (grpName.Contains(curElev))
-                                    Utils.SetParameterByName(curSheet, "Code Filter", newFilter);
-
-                                // update the masonry code
-                                if (grpName.Contains(newElev))
-                                    Utils.SetParameterByName(curSheet, "Code Masonry", codeMasonry);                               
-                            }
-                            else if (countSheets > 0)
-                            {
-                                if (grpNewName.StartsWith(newElev))
+                                TaskDialogResult tdDupSheetsRes = tdDupSheets.Show();                                                      
+                               
+                                if (curGrp.Contains(newElev))
                                 {
-                                    string[] curGroup = grpNewName.Split('-', '|');
+                                    // update the category
+                                    try
+                                    {
+                                        if (curCat == "Active")
+                                        {
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            Utils.SetParameterByName(curSheet, "Category", "Active");
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+
+                                        throw;
+                                    }                                    
+
+                                    // update the masonry code
+                                    Utils.SetParameterByName(curSheet, "Code Masonry", codeMasonry);
+
+                                    // update the group name
+                                    string[] curGroup = curGrp.Split('-', '|');
 
                                     string curCode = curGroup[1];
 
@@ -232,8 +225,32 @@ namespace ElevationDesignation
 
                                     Utils.SetParameterByName(curSheet, "Group", newCode);
                                 }
-                            }                           
-                        }
+                            }
+                            
+                            if (countSheets == 0)
+                            {                             
+                                // change the group name
+                                if (curGrp.Contains(curElev))
+                                    Utils.SetParameterByName(curSheet, "Group", grpNewName);
+
+                                // update the code filter
+                                if (curGrp.Contains(curElev))
+                                    Utils.SetParameterByName(curSheet, "Code Filter", newFilter);
+
+                                // update the masonry code
+                                if (curGrp.Contains(newElev))
+                                    Utils.SetParameterByName(curSheet, "Code Masonry", codeMasonry);
+
+                                // replace masonry code in group name
+                                string[] curGroup = grpNewName.Split('-', '|');
+
+                                string curCode = curGroup[1];
+
+                                string newCode = curGroup[0] + "-" + codeMasonry + "|" + curGroup[2] + "|" + curGroup[3] + "|" + curGroup[4];
+
+                                Utils.SetParameterByName(curSheet, "Group", newCode);
+                            }
+                        }               
 
                         // commit the 1st transaction
                         t.Commit();
