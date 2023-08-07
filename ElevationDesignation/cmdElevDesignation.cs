@@ -128,31 +128,11 @@ namespace ElevationDesignation
                         }
                         
                         // create a counter for the sheets
-                        int countSheets = 0;  
+                        int countSheets = 0;
 
                         // loop through the sheets & change sheet number & name
                         foreach (ViewSheet curSheet in sheetsList)
                         {
-                            // create some variables for parameters to be updated
-                            string curCat = Utils.GetParameterValueByName(curSheet, "Category");
-                            string curGrp = Utils.GetParameterValueByName(curSheet, "Group");
-
-                            string grpNewName = Utils.GetLastCharacterInString(curGrp, curElev, newElev);
-
-                            try
-                            {
-                                // change elevation designation in sheet number
-                                if (curSheet.SheetNumber.Contains(curElev.ToLower()))
-                                    curSheet.SheetNumber = curSheet.SheetNumber.Replace(curElev.ToLower(), newElev.ToLower());
-                            }
-                            catch (Autodesk.Revit.Exceptions.ArgumentException)
-                            {
-                                // increment the counter
-                                countSheets++;
-
-                                continue;
-                            }
-
                             // set some varibales
                             string originalName = curSheet.Name;
                             string newName = "";
@@ -180,35 +160,56 @@ namespace ElevationDesignation
                             if (curSheet.Name.StartsWith("Elevation"))
                                 curSheet.Name = "Exterior Elevations";
 
-                            // if the sheets already exist, alert the user & continue
-                            if (countSheets > 0)
+                            try
                             {
-                                TaskDialog tdDupSheets = new TaskDialog("Error");
-                                tdDupSheets.MainIcon = TaskDialogIcon.TaskDialogIconInformation;
-                                tdDupSheets.Title = "Duplicate Sheet Names";
-                                tdDupSheets.TitleAutoPrefix = false;
-                                tdDupSheets.MainContent = "The sheets already exist";
-                                tdDupSheets.CommonButtons = TaskDialogCommonButtons.Close;
+                                // change elevation designation in sheet number
+                                if (curSheet.SheetNumber.Contains(curElev.ToLower()))
+                                    curSheet.SheetNumber = curSheet.SheetNumber.Replace(curElev.ToLower(), newElev.ToLower());
+                            }
+                            catch (Autodesk.Revit.Exceptions.ArgumentException)
+                            {
+                                // increment the counter
+                                countSheets++;
 
-                                TaskDialogResult tdDupSheetsRes = tdDupSheets.Show();                                                      
-                               
+                                continue;
+                            }                            
+                        }
+
+                        // if the sheets already exist, alert the user & continue
+                        if (countSheets > 0)
+                        {
+                            TaskDialog tdDupSheets = new TaskDialog("Error");
+                            tdDupSheets.MainIcon = TaskDialogIcon.TaskDialogIconInformation;
+                            tdDupSheets.Title = "Duplicate Sheet Names";
+                            tdDupSheets.TitleAutoPrefix = false;
+                            tdDupSheets.MainContent = "The sheets already exist";
+                            tdDupSheets.CommonButtons = TaskDialogCommonButtons.Close;
+
+                            TaskDialogResult tdDupSheetsRes = tdDupSheets.Show();
+
+                            foreach (ViewSheet curSheet in sheetsList)
+                            {
+                                // create some variables for parameters to be updated
+                                Parameter curCat = Utils.GetParameterByNameAndWritable(curSheet, "Category");
+                                string curGrp = Utils.GetParameterValueByName(curSheet, "Group");
+
                                 if (curGrp.Contains(newElev))
                                 {
                                     // update the category
                                     try
                                     {
-                                        if (curCat == "Active")
+                                        if (curCat.Definition.Name != "Active")
                                         {
-                                            continue;
+                                            Utils.SetParameterByName(curSheet, "Category", "Active");
                                         }
                                         else
                                         {
-                                            Utils.SetParameterByName(curSheet, "Category", "Active");
+                                            continue;
                                         }
                                     }
                                     catch (Exception)
                                     {
-                                    }                                    
+                                    }
 
                                     // update the masonry code
                                     Utils.SetParameterByName(curSheet, "Code Masonry", codeMasonry);
@@ -221,11 +222,20 @@ namespace ElevationDesignation
                                     string newCode = curGroup[0] + "-" + codeMasonry + "|" + curGroup[2] + "|" + curGroup[3] + "|" + curGroup[4];
 
                                     Utils.SetParameterByName(curSheet, "Group", newCode);
-                                }
+                                }                              
                             }
-                            
-                            if (countSheets == 0)
-                            {                             
+                        }
+
+                        if (countSheets == 0)
+                        {
+                            foreach (ViewSheet curSheet in sheetsList)
+                            {
+                                // create some variables for parameters to be updated
+                                string curCat = Utils.GetParameterValueByName(curSheet, "Category");
+                                string curGrp = Utils.GetParameterValueByName(curSheet, "Group");
+
+                                string grpNewName = Utils.GetLastCharacterInString(curGrp, curElev, newElev);
+
                                 // change the group name
                                 if (curGrp.Contains(curElev))
                                     Utils.SetParameterByName(curSheet, "Group", grpNewName);
@@ -246,7 +256,7 @@ namespace ElevationDesignation
                                 string newCode = curGroup[0] + "-" + codeMasonry + "|" + curGroup[2] + "|" + curGroup[3] + "|" + curGroup[4];
 
                                 Utils.SetParameterByName(curSheet, "Group", newCode);
-                            }
+                            }                                
                         }               
 
                         // commit the 1st transaction
