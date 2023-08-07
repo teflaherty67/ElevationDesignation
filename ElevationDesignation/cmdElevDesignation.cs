@@ -356,6 +356,8 @@ namespace ElevationDesignation
                     }
                 }
 
+                #region Task Dialogs
+
                 // alert the user
                 TaskDialog tdSuccess = new TaskDialog("Complete");
                 tdSuccess.MainIcon = TaskDialogIcon.TaskDialogIconWarning;
@@ -397,6 +399,8 @@ namespace ElevationDesignation
             }
             return Result.Failed;
         }
+
+        #endregion
 
         public static String GetMethod()
         {
