@@ -25,7 +25,7 @@
         <Label Content="New Elevation Designation:" Grid.Row="2"/>
         <ComboBox x:Name="cmbNewElev" Grid.Column="1" Width="90" Height="25" Grid.Row="2"/>
         <Label Content="New Elevation Masonry:" Grid.Row="4"/>
-        <ComboBox x:Name="cmbCodeMasonry" Grid.Column="1" Width="90" Height="25" Grid.Row="4"/>
+        <ComboBox x:Name="cmbCodeMasonry" Grid.Column="1" Width="90" Height="25" Grid.Row="4" IsEditable="True"/>
         <StackPanel Grid.Row="6" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
             <Button x:Name="btnOK" Width="90" Height="25" Margin="0,0,10,0" Content="OK" Click="btnOK_Click"/>
             <Button x:Name="btnCancel" Width="90" Height="25" Content="Cancel" Click="btnCancel_Click"/>
