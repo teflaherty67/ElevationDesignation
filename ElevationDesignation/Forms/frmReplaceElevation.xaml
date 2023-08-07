@@ -20,7 +20,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width ="90"/>
         </Grid.ColumnDefinitions>
-        <Label Content="Existing Elevation Designation:"/>
+        <Label Content="Current Elevation Designation:"/>
         <ComboBox x:Name="cmbCurElev" Grid.Column="1" Width="90" Height="25"/>
         <Label Content="New Elevation Designation:" Grid.Row="2"/>
         <ComboBox x:Name="cmbNewElev" Grid.Column="1" Width="90" Height="25" Grid.Row="2"/>
@@ -29,7 +29,7 @@
         <StackPanel Grid.Row="6" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
             <Button x:Name="btnOK" Width="90" Height="25" Margin="0,0,10,0" Content="OK" Click="btnOK_Click"/>
             <Button x:Name="btnCancel" Width="90" Height="25" Content="Cancel" Click="btnCancel_Click"/>
-            <Button x:Name="btnHelp" Width="90" Height="25" Margin="10,0,-1,0" Content="Help" Click="btnHelp_Click"/>
+            <Button x:Name="btnHelp" Width="90" Height="25" Margin="10,0,0,0" Content="Help" Click="btnHelp_Click"/>
         </StackPanel>
     </Grid>
 </Window>

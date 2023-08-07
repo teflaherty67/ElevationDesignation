@@ -77,7 +77,7 @@ namespace ElevationDesignation
             List<ViewSchedule> curElevList = Utils.GetAllSchedulesByElevation(curDoc, curElev);
             List<ViewSchedule> newElevList = Utils.GetAllSchedulesByElevation(curDoc, newElev);
 
-            if (newElevList.Count == curElevList.Count)
+            if (curElevList.Count != 0 && newElevList.Count == curElevList.Count)
             {
                 // create a transaction group
                 using (TransactionGroup tGroup = new TransactionGroup(curDoc))
@@ -91,6 +91,7 @@ namespace ElevationDesignation
                         // start the 1st transaction
                         t.Start("Rename views & sheets");
 
+                        // create a counter for the views
                         int countView = 0;
 
                         // loop through the views
@@ -108,6 +109,7 @@ namespace ElevationDesignation
                             }
                             catch (Autodesk.Revit.Exceptions.ArgumentException)
                             {
+                                // increment the counter
                                 countView++;
 
                                 continue;
@@ -117,13 +119,17 @@ namespace ElevationDesignation
                         // if the views already exist, alert the user & continue
                         if (countView > 0)
                         {
-                            string msgViewDup = "The views already exist";
-                            string titleViewDup = "Duplicate View Names";
-                            Forms.MessageBoxButton btnViewDup = Forms.MessageBoxButton.OK;
+                            TaskDialog tdDupViews = new TaskDialog("Error");
+                            tdDupViews.MainIcon = TaskDialogIcon.TaskDialogIconInformation;
+                            tdDupViews.Title = "Duplicate View Names";
+                            tdDupViews.TitleAutoPrefix = false;
+                            tdDupViews.MainContent = "The views already exist";
+                            tdDupViews.CommonButtons = TaskDialogCommonButtons.Close;
 
-                            Forms.MessageBox.Show(msgViewDup, titleViewDup, btnViewDup, Forms.MessageBoxImage.Warning);
+                            TaskDialogResult tdDupViewsRes = tdDupViews.Show();
                         }
                         
+                        // create a counter for the sheets
                         int countSheets = 0;
 
                         // loop through the sheets & change sheet number & name
@@ -137,6 +143,7 @@ namespace ElevationDesignation
                             }
                             catch (Autodesk.Revit.Exceptions.ArgumentException)
                             {
+                                // increment the counter
                                 countSheets++;
 
                                 continue;
@@ -146,11 +153,14 @@ namespace ElevationDesignation
                         // if the sheets already exist, alert the user & continue
                         if (countSheets > 0)
                         {
-                            string msgSheetDup = "The sheets already exist";
-                            string titleSheetDup = "Duplicate Sheet Names";
-                            Forms.MessageBoxButton btnSheetDup = Forms.MessageBoxButton.OK;
+                            TaskDialog tdDupSheets = new TaskDialog("Error");
+                            tdDupSheets.MainIcon = TaskDialogIcon.TaskDialogIconInformation;
+                            tdDupSheets.Title = "Duplicate Sheet Names";
+                            tdDupSheets.TitleAutoPrefix = false;
+                            tdDupSheets.MainContent = "The sheets already exist";
+                            tdDupSheets.CommonButtons = TaskDialogCommonButtons.Close;
 
-                            Forms.MessageBox.Show(msgSheetDup, titleSheetDup, btnSheetDup, Forms.MessageBoxImage.Warning);
+                            TaskDialogResult tdDupSheetsRes = tdDupSheets.Show();                            
                         }
 
                         // loop through the sheets & update parameters
@@ -322,13 +332,31 @@ namespace ElevationDesignation
                 return Result.Succeeded;
             }
 
+            else if (curElevList.Count == 0)
+            {
+                TaskDialog tdCurSchedError = new TaskDialog("Error");
+                tdCurSchedError.MainIcon = TaskDialogIcon.TaskDialogIconWarning;
+                tdCurSchedError.Title = "Replace Elevation Designation";
+                tdCurSchedError.TitleAutoPrefix = false;
+                tdCurSchedError.MainContent = "The schedules for the current elevation do not follow the proper naming convention; " +
+                    "please correct the schedule names and try again.";
+                tdCurSchedError.CommonButtons = TaskDialogCommonButtons.Close;
+
+                TaskDialogResult tdCurErrorRes = tdCurSchedError.Show();
+            }
+
             else if (newElevList.Count != curElevList.Count)
             {
                 // if the schedules don't exist, alert the user & exit
-                string msgFailed = "The schedules for the new elevation do not exist. Create the schedules and try again";
-                string titleFailed = "Warning";
-                Forms.MessageBoxButton btnFailed = Forms.MessageBoxButton.OK;
-                Forms.MessageBoxResult result = Forms.MessageBox.Show(msgFailed, titleFailed, btnFailed, Forms.MessageBoxImage.Warning);
+                TaskDialog tdNewSchedError = new TaskDialog("Error");
+                tdNewSchedError.MainIcon = TaskDialogIcon.TaskDialogIconWarning;
+                tdNewSchedError.Title = "Replace Elevation Designation";
+                tdNewSchedError.TitleAutoPrefix = false;
+                tdNewSchedError.MainContent = "The schedules for the new elevation do not exist, or do not follow the proper naming convention; " +
+                    "please create the schedules, or correct the schedule names, and try again.";
+                tdNewSchedError.CommonButtons = TaskDialogCommonButtons.Close;
+
+                TaskDialogResult tdNewErrorRes = tdNewSchedError.Show();
             }
             return Result.Failed;
         }
