@@ -44,14 +44,12 @@ namespace ElevationDesignation
                 return Result.Failed;
             }
 
-                // get data from the form
-
+            // get data from the form
             string curElev = curForm.GetComboBoxCurElevSelectedItem();
             string newElev = curForm.GetComboBoxNewElevSelectedItem();
             string codeMasonry = curForm.GetComboBoxCodeMasonrySelectedItem();
 
             // set some variables
-
             string newFilter = "";
 
             if (newElev == "A")
@@ -68,12 +66,10 @@ namespace ElevationDesignation
                 newFilter = "6";
 
             // get all the views & sheets
-
             List<View> viewsList = Utils.GetAllViews(curDoc);
             List<ViewSheet> sheetsList = Utils.GetAllSheets(curDoc);
 
             // check if all the schedules exist for newElev
-
             List<ViewSchedule> curElevList = Utils.GetAllSchedulesByElevation(curDoc, curElev);
             List<ViewSchedule> newElevList = Utils.GetAllSchedulesByElevation(curDoc, newElev);
 
@@ -87,6 +83,8 @@ namespace ElevationDesignation
                     {
                         // start the transaction group
                         tGroup.Start("Replace Elevation Designation");
+
+                        #region Rename views & Sheets
 
                         // start the 1st transaction
                         t.Start("Rename views & sheets");
@@ -135,7 +133,7 @@ namespace ElevationDesignation
                         // loop through the sheets & change sheet number & name
                         foreach (ViewSheet curSheet in sheetsList)
                         {
-                            // create some variable for parameters to be updated
+                            // create some variables for parameters to be updated
                             string curCat = Utils.GetParameterValueByName(curSheet, "Category");
                             string curGrp = Utils.GetParameterValueByName(curSheet, "Group");
 
@@ -178,6 +176,7 @@ namespace ElevationDesignation
                                 curSheet.Name = newName;
                             }
 
+                            // rename the elevation sheets
                             if (curSheet.Name.StartsWith("Elevation"))
                                 curSheet.Name = "Exterior Elevations";
 
@@ -209,8 +208,6 @@ namespace ElevationDesignation
                                     }
                                     catch (Exception)
                                     {
-
-                                        throw;
                                     }                                    
 
                                     // update the masonry code
@@ -255,11 +252,15 @@ namespace ElevationDesignation
                         // commit the 1st transaction
                         t.Commit();
 
+                        #endregion
+
                         // set the cover for newElev as the active view
                         ViewSheet newCover;
                         newCover = Utils.GetSheetByElevationAndNameContains(curDoc, newElev, "Cover");
 
                         uidoc.ActiveView = newCover;
+
+                        #region Replace Cover schedules
 
                         // start the 2nd transaction
                         t.Start("Replace the Cover schedules");
@@ -295,11 +296,15 @@ namespace ElevationDesignation
                         // commit the 2nd transaction
                         t.Commit();
 
+                        #endregion
+
                         // set the roof plan for newElev as the active view
                         ViewSheet newRoof;
                         newRoof = Utils.GetSheetByElevationAndNameContains(curDoc, newElev, "Roof Plan");
 
                         uidoc.ActiveView = newRoof;
+
+                        #region Replace ventilation schedules
 
                         // start the 3rd transaction
                         t.Start("Replace the roof schedules");
@@ -335,16 +340,21 @@ namespace ElevationDesignation
                         // commit the 3rd transaction
                         t.Commit();
 
+                        #endregion
+
                         tGroup.Assimilate();
                     }
                 }
 
                 // alert the user
-                string msgSucceeded = "Changed Elevation " + curElev + " to Elevation " + newElev;
-                string titleSucceeded = "Complete";
-                Forms.MessageBoxButton btnSucceeded = Forms.MessageBoxButton.OK;
+                TaskDialog tdSuccess = new TaskDialog("Complete");
+                tdSuccess.MainIcon = TaskDialogIcon.TaskDialogIconWarning;
+                tdSuccess.Title = "Complete";
+                tdSuccess.TitleAutoPrefix = false;
+                tdSuccess.MainContent = "Changed Elevation " + curElev + " to Elevation " + newElev;
+                tdSuccess.CommonButtons = TaskDialogCommonButtons.Close;
 
-                Forms.MessageBox.Show(msgSucceeded, titleSucceeded, btnSucceeded, Forms.MessageBoxImage.Information);
+                TaskDialogResult tdSuccessRes = tdSuccess.Show();                
 
                 return Result.Succeeded;
             }
