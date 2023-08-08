@@ -230,7 +230,7 @@ namespace ElevationDesignation
 
                         if (countSheets == 0)
                         {
-                            List<ViewSheet> newSheetList = Utils.GetAllSheetsByElevation(curDoc, curElev.ToLower());
+                            List<ViewSheet> newSheetList = Utils.GetAllSheetsByElevation(curDoc, newElev.ToLower());
 
                             foreach (ViewSheet curSheet in newSheetList)
                             {
@@ -244,12 +244,16 @@ namespace ElevationDesignation
                                 if (curGrp.Contains(curElev))
                                     Utils.SetParameterByName(curSheet, "Group", grpNewName);
 
+                                // update the elevation designation
+                                if (curGrp.Contains(curElev))
+                                    Utils.SetParameterByName(curSheet, "Elevation Designation", newElev);
+
                                 // update the code filter
                                 if (curGrp.Contains(curElev))
                                     Utils.SetParameterByName(curSheet, "Code Filter", newFilter);
 
                                 // update the masonry code
-                                if (curGrp.Contains(newElev))
+                                if (curGrp.Contains(curElev))
                                     Utils.SetParameterByName(curSheet, "Code Masonry", codeMasonry);
 
                                 // replace masonry code in group name

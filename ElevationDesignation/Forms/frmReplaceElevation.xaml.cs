@@ -102,7 +102,7 @@ namespace ElevationDesignation
 
         private void btnHelp_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://lifestyle-usa-design.atlassian.net/l/cp/L6yQ60y1");
+            Process.Start("https://lifestyle-usa-design.atlassian.net/l/cp/HWuNtzHF");
         }
     }
 }
