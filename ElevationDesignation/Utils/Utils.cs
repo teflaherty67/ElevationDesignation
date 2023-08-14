@@ -316,12 +316,7 @@ namespace ElevationDesignation
             }
 
             return m_vpList;
-        }
-
-        internal static string GetStringBetweenCharacters(string codeMasonry, char v1, char v2)
-        {
-            throw new NotImplementedException();
-        }
+        }     
 
         #endregion
     }
