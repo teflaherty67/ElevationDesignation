@@ -8,13 +8,19 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug2023|Any CPU = Debug2023|Any CPU
+		Debug2024|Any CPU = Debug2024|Any CPU
 		Release2023|Any CPU = Release2023|Any CPU
+		Release2024|Any CPU = Release2024|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B320A297-C73F-47D1-B647-6C1C974FF58F}.Debug2023|Any CPU.ActiveCfg = Debug2023|Any CPU
 		{B320A297-C73F-47D1-B647-6C1C974FF58F}.Debug2023|Any CPU.Build.0 = Debug2023|Any CPU
+		{B320A297-C73F-47D1-B647-6C1C974FF58F}.Debug2024|Any CPU.ActiveCfg = Debug2024|Any CPU
+		{B320A297-C73F-47D1-B647-6C1C974FF58F}.Debug2024|Any CPU.Build.0 = Debug2024|Any CPU
 		{B320A297-C73F-47D1-B647-6C1C974FF58F}.Release2023|Any CPU.ActiveCfg = Release2023|Any CPU
 		{B320A297-C73F-47D1-B647-6C1C974FF58F}.Release2023|Any CPU.Build.0 = Release2023|Any CPU
+		{B320A297-C73F-47D1-B647-6C1C974FF58F}.Release2024|Any CPU.ActiveCfg = Release2024|Any CPU
+		{B320A297-C73F-47D1-B647-6C1C974FF58F}.Release2024|Any CPU.Build.0 = Release2024|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
