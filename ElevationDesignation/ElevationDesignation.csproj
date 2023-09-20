@@ -71,7 +71,7 @@
       <HintPath>$(ProgramW6432)\Autodesk\Revit 2023\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RevitAPI" Condition=" '$(Configuration)' == 'Debug2023' or '$(Configuration)' == 'Release2023'">
+    <Reference Include="RevitAPIUI" Condition=" '$(Configuration)' == 'Debug2023' or '$(Configuration)' == 'Release2023'">
       <HintPath>$(ProgramW6432)\Autodesk\Revit 2023\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>  
@@ -79,7 +79,7 @@
       <HintPath>$(ProgramW6432)\Autodesk\Revit 2024\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RevitAPI" Condition=" '$(Configuration)' == 'Debug2024' or '$(Configuration)' == 'Release2024'">
+    <Reference Include="RevitAPIUI" Condition=" '$(Configuration)' == 'Debug2024' or '$(Configuration)' == 'Release2024'">
       <HintPath>$(ProgramW6432)\Autodesk\Revit 2024\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>    
