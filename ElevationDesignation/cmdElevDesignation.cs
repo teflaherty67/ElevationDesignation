@@ -216,15 +216,7 @@ namespace ElevationDesignation
                                     // update the masonry code
                                     Utils.SetParameterByName(curSheet, "Code Masonry", codeMasonry);
 
-                                    // update the group name
-                                    string newGrp = "";
-
-                                    if (curGrp == "Elevation " + curElev)
-                                    {
-                                        newGrp = "Elevation " + newElev;
-                                        Utils.SetParameterByName(curSheet, "Group", newGrp);
-                                    }
-                                    else
+                                    if (curGrp.Contains("-"))
                                     {
                                         string[] curGroup = curGrp.Split('-', '|');
 
@@ -233,7 +225,10 @@ namespace ElevationDesignation
                                         string newCode = curGroup[0] + "-" + codeMasonry + "|" + curGroup[2] + "|" + curGroup[3] + "|" + curGroup[4];
 
                                         Utils.SetParameterByName(curSheet, "Group", newCode);
-                                    }                                    
+                                    }
+
+                                    else
+                                        continue;
                                 }                              
                             }
                         }
@@ -248,11 +243,7 @@ namespace ElevationDesignation
                                 string curCat = Utils.GetParameterValueByName(curSheet, "Category");
                                 string curGrp = Utils.GetParameterValueByName(curSheet, "Group");
 
-                                string grpNewName = Utils.GetLastCharacterInString(curGrp, curElev, newElev);
-
-                                // change the group name
-                                if (curGrp.Contains(curElev))
-                                    Utils.SetParameterByName(curSheet, "Group", grpNewName);
+                                string grpNewName = Utils.ReplaceElevationCharacter(curGrp, curElev, newElev);
 
                                 // update the elevation designation
                                 if (curGrp.Contains(curElev))
@@ -266,14 +257,19 @@ namespace ElevationDesignation
                                 if (curGrp.Contains(curElev))
                                     Utils.SetParameterByName(curSheet, "Code Masonry", codeMasonry);
 
-                                // replace masonry code in group name
-                                string[] curGroup = grpNewName.Split('-', '|');
+                                // Update the group name
+                                if (curGrp.Contains("-"))
+                                {
+                                    string[] curGroup = grpNewName.Split('-', '|');
 
-                                string curCode = curGroup[1];
+                                    string curCode = curGroup[1];
 
-                                string newCode = curGroup[0] + "-" + codeMasonry + "|" + curGroup[2] + "|" + curGroup[3] + "|" + curGroup[4];
+                                    string newCode = curGroup[0] + "-" + codeMasonry + "|" + curGroup[2] + "|" + curGroup[3] + "|" + curGroup[4];
 
-                                Utils.SetParameterByName(curSheet, "Group", newCode);
+                                    Utils.SetParameterByName(curSheet, "Group", newCode);
+                                }
+                                else
+                                    Utils.SetParameterByName(curSheet, "Group", grpNewName);                                
                             }                                
                         }               
 

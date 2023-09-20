@@ -214,7 +214,7 @@ namespace ElevationDesignation
 
         #region Strings
 
-        internal static string GetLastCharacterInString(string grpName, string curElev, string newElev)
+        internal static string ReplaceElevationCharacter(string grpName, string curElev, string newElev)
         {
             char lastChar = grpName[grpName.Length - 1];
 
