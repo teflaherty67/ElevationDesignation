@@ -39,18 +39,7 @@ namespace ElevationDesignation
 
             curParam.Set(value);
             return curParam.ToString();
-        }
-
-        internal static Parameter GetParameterByName(Element curElem, string paramName)
-        {
-            foreach (Parameter curParam in curElem.Parameters)
-            {
-                if (curParam.Definition.Name.ToString() == paramName)
-                    return curParam;
-            }
-
-            return null;
-        }
+        }       
 
         internal static Parameter GetParameterByNameAndWritable(Element curElem, string paramName)
         {
@@ -169,37 +158,7 @@ namespace ElevationDesignation
             }
 
             return returnList;
-        }       
-
-        internal static List<ScheduleSheetInstance> GetAllScheduleSheetInstancesByName(Document doc, string elevName)
-        {
-            List<ScheduleSheetInstance> ssiList = GetAllScheduleSheetInstances(doc);
-
-            List<ScheduleSheetInstance> returnList = new List<ScheduleSheetInstance>();
-
-            foreach (ScheduleSheetInstance curInstance in ssiList)
-            {
-                if (curInstance.Name.Contains(elevName))
-                    returnList.Add(curInstance);
-            }
-
-            return returnList;
-        }
-
-        internal static List<ScheduleSheetInstance> GetAllScheduleSheetInstances(Document doc)
-        {
-            FilteredElementCollector colSSI = new FilteredElementCollector(doc);
-            colSSI.OfClass(typeof(ScheduleSheetInstance));
-
-            List<ScheduleSheetInstance> returnList = new List<ScheduleSheetInstance>();
-
-            foreach (ScheduleSheetInstance curInstance in colSSI)
-            {
-                returnList.Add(curInstance);
-            }
-
-            return returnList;
-        }               
+        } 
 
         #endregion
 
@@ -255,7 +214,7 @@ namespace ElevationDesignation
 
         #region Strings
 
-        internal static string GetLastCharacterInString(string grpName, string curElev, string newElev)
+        internal static string ReplaceElevationCharacter(string grpName, string curElev, string newElev)
         {
             char lastChar = grpName[grpName.Length - 1];
 
@@ -297,32 +256,6 @@ namespace ElevationDesignation
             return m_returnViews;
         }
 
-        #endregion
-
-        #region Viewports
-
-        internal static List<Viewport> GetAllViewports(Document curDoc)
-        {
-            //get all viewports
-            FilteredElementCollector m_vpCollector = new FilteredElementCollector(curDoc);
-            m_vpCollector.OfCategory(BuiltInCategory.OST_Viewports);
-
-            //output viewports to list
-            List<Viewport> m_vpList = new List<Viewport>();
-            foreach (Viewport curVP in m_vpCollector)
-            {
-                //add to list
-                m_vpList.Add(curVP);
-            }
-
-            return m_vpList;
-        }
-
-        internal static string GetStringBetweenCharacters(string codeMasonry, char v1, char v2)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
+        #endregion        
     }
 }
